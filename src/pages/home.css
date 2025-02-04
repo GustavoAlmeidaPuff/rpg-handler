@@ -83,6 +83,18 @@
   text-align: center;
 }
 
+.product-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  width: 100%;
+  max-width: 350px;
+}
+
+.product-card-link:hover {
+  text-decoration: none;
+}
+
 @media (max-width: 768px) {
   .home-container {
     padding: 1rem;
