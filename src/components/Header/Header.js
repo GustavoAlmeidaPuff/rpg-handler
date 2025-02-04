@@ -11,9 +11,9 @@ function Header() {
           <img src={logo} alt="Logo" className="logo" />
         </Link>
         <nav className="nav-menu">
-          <Link to="/initiative" className="nav-link">Initiative</Link>
-          <Link to="/dices" className="nav-link">Dices</Link>
-          <Link to="/all" className="nav-link">All</Link>
+          <Link to="/initiative" className="nav-link">Iniciativa</Link>
+          <Link to="/dices" className="nav-link">Dado</Link>
+          <Link to="/all" className="nav-link">Em breve...</Link>
         </nav>
       </div>
     </header>

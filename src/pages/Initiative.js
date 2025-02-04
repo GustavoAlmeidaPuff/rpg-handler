@@ -36,7 +36,7 @@ function Initiative() {
   return (
     <div className="initiative-main-content">
       <div className="initiative-container">
-        <h1>Ordem de Iniciativa</h1>
+        <h1>Ordem de <span className="gradient-text">Iniciativa</span></h1>
         
         <form onSubmit={handleAddCharacter} className="initiative-form">
           <input
