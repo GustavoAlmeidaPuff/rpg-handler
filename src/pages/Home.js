@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './home.css';
 import initiativeImage from '../assets/initiative-preview.png';
+import hpImage from '../assets/hp-preview.png';
 
 function Home() {
   return (
@@ -16,6 +17,16 @@ function Home() {
             </div>
             <h2>Ajudante de Iniciativa</h2>
             <p>Organize sua fila de iniciativa</p>
+          </div>
+        </Link>
+
+        <Link to="/hp" className="product-card-link">
+          <div className="product-card">
+            <div className="card-image">
+              <img src={hpImage} alt="Preview do gerenciador de vida" />
+            </div>
+            <h2>Gerenciador de Vida</h2>
+            <p>Controle os pontos de vida dos personagens</p>
           </div>
         </Link>
       </section>
