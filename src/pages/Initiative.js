@@ -3,7 +3,7 @@ import React from 'react';
 function Initiative() {
   return (
     <div>
-      <h1>Página de Initiative</h1>
+      <h1>Initiative page</h1>
     </div>
   );
 }
