@@ -10,6 +10,7 @@
 .main-content {
   flex: 1;
   padding: 2rem;
+  min-height: calc(100vh - 200px); /* Garante espaço suficiente para o conteúdo */
 }
 
 .App-logo {

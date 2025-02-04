@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Initiative from './pages/Initiative';
 import Header from './components/Header/Header.js';
+import Footer from './components/Footer/Footer.js';
 import Hp from './pages/HPmanager.js';
 import './App.css';
 
@@ -19,6 +20,7 @@ function App() {
             <Route path="/all" element={<div>All Page</div>} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </Router>
   );
