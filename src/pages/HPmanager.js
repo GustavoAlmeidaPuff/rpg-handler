@@ -21,7 +21,7 @@ function HPManager() {
       const updatedHP = { ...hpValues };
       parsedCharacters.forEach(char => {
         if (!updatedHP[char.name]) {
-          updatedHP[char.name] = 0;
+          updatedHP[char.name] = 1;
         }
       });
       
@@ -37,7 +37,7 @@ function HPManager() {
   const handleHPChange = (characterName, value) => {
     setHpValues(prev => ({
       ...prev,
-      [characterName]: parseInt(value) || 0
+      [characterName]: parseInt(value) || 1
     }));
   };
 
@@ -93,7 +93,7 @@ function HPManager() {
                   <label>Vida Total:</label>
                   <input
                     type="number"
-                    value={hpValues[char.name] || 0}
+                    value={hpValues[char.name] || 1}
                     onChange={(e) => handleHPChange(char.name, e.target.value)}
                     className="hp-input"
                   />
