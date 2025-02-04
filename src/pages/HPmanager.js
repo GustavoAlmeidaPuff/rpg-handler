@@ -3,7 +3,11 @@ import './hpmanager.css';
 
 function HPManager() {
   const [characters, setCharacters] = useState([]);
-  const [hpValues, setHpValues] = useState({});
+  const [hpValues, setHpValues] = useState(() => {
+    // Carrega os valores de HP do localStorage quando o componente é montado
+    const savedHP = localStorage.getItem('rpgCharactersHP');
+    return savedHP ? JSON.parse(savedHP) : {};
+  });
   const [modifications, setModifications] = useState({});
 
   useEffect(() => {
@@ -13,12 +17,8 @@ function HPManager() {
       const parsedCharacters = JSON.parse(savedCharacters);
       setCharacters(parsedCharacters);
 
-      // Inicializa os valores de HP se não existirem
-      const savedHP = localStorage.getItem('rpgCharactersHP');
-      const hpData = savedHP ? JSON.parse(savedHP) : {};
-      
       // Garante que todos os personagens tenham um valor de HP
-      const updatedHP = { ...hpData };
+      const updatedHP = { ...hpValues };
       parsedCharacters.forEach(char => {
         if (!updatedHP[char.name]) {
           updatedHP[char.name] = 0;
