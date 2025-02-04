@@ -2,8 +2,14 @@ import React from 'react';
 
 function Initiative() {
   return (
-    <div>
-      <h1>Initiative page</h1>
+    <div className="initiative-main-content">
+        <div className="initiative-container">
+            <h1>Initiative page</h1>
+            
+
+        </div>
+
+      
     </div>
   );
 }
