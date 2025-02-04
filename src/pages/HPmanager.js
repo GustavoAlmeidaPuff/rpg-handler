@@ -79,7 +79,10 @@ function HPManager() {
       ) : (
         <div className="character-list">
           {characters.map((char, index) => (
-            <div key={index} className="character-hp-item">
+            <div 
+              key={index} 
+              className={`character-hp-item ${(hpValues[char.name] || 0) < 1 ? 'negative-hp' : ''}`}
+            >
               <div className="character-info">
                 <span className="initiative-number">{char.initiative}</span>
                 <span className="character-name">{char.name}</span>

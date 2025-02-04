@@ -33,6 +33,12 @@ function Initiative() {
     setCharacters([]);
   };
 
+  const handleInitiativeChange = (index, newValue) => {
+    const updatedCharacters = [...characters];
+    updatedCharacters[index].initiative = parseInt(newValue) || 0;
+    setCharacters(updatedCharacters.sort((a, b) => b.initiative - a.initiative));
+  };
+
   return (
     <div className="initiative-main-content">
       <div className="initiative-container">
@@ -62,7 +68,12 @@ function Initiative() {
         <div className="initiative-list">
           {characters.map((char, index) => (
             <div key={index} className="character-item">
-              <span className="initiative-number">{char.initiative}</span>
+              <input
+                type="number"
+                className="initiative-number editable"
+                value={char.initiative}
+                onChange={(e) => handleInitiativeChange(index, e.target.value)}
+              />
               <span className="character-name">{char.name}</span>
               <button 
                 onClick={() => handleRemoveCharacter(index)}

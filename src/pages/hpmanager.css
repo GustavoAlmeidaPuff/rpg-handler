@@ -47,6 +47,11 @@
   gap: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.322);
   flex-wrap: wrap;
+  transition: background-color 0.3s ease;
+}
+
+.character-hp-item.negative-hp {
+  background-color: #ffc8d0;
 }
 
 .character-info {

@@ -83,12 +83,36 @@
 .initiative-number {
   font-size: 20px;
   font-weight: bold;
-  min-width: 40px;
+  width: 45px;
+  min-width: unset;
   text-align: center;
   background-color: #135bcf;
   color: white;
-  padding: 5px 10px;
+  padding: 5px 8px;
   border-radius: 4px;
+}
+
+.initiative-number.editable {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  -moz-appearance: textfield;
+}
+
+.initiative-number.editable::-webkit-outer-spin-button,
+.initiative-number.editable::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.initiative-number.editable:hover {
+  background-color: #1a6be8;
+}
+
+.initiative-number.editable:focus {
+  background-color: #1a6be8;
+  box-shadow: 0 0 0 2px rgba(19, 91, 207, 0.3);
 }
 
 .character-name {
