@@ -12,7 +12,7 @@ function Header() {
         </Link>
         <nav className="nav-menu">
           <Link to="/initiative" className="nav-link">Iniciativa</Link>
-          <Link to="/dices" className="nav-link">Dado</Link>
+          <Link to="/hp" className="nav-link">HP</Link>
           <Link to="/all" className="nav-link">Em breve...</Link>
         </nav>
       </div>

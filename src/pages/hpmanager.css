@@ -1,0 +1,159 @@
+.hp-manager-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hp-manager-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #8757f5, #57a05d, #5e90e0, #72d5e2, rgb(224, 62, 124));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  animation: gradient 5s ease infinite;
+  background-size: 300% 300%;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.character-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.character-hp-item {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+}
+
+.character-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 200px;
+}
+
+.initiative-number {
+  font-size: 20px;
+  font-weight: bold;
+  min-width: 40px;
+  text-align: center;
+  background-color: #135bcf;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.character-name {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.hp-controls {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.hp-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hp-input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.hp-modification {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.modification-input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.subtract-button, .add-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.subtract-button {
+  background-color: #f44336;
+}
+
+.subtract-button:hover {
+  background-color: #d32f2f;
+}
+
+.add-button {
+  background-color: #4CAF50;
+}
+
+.add-button:hover {
+  background-color: #388E3C;
+}
+
+@media (max-width: 768px) {
+  .hp-manager-container {
+    padding: 1rem;
+  }
+
+  .character-hp-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hp-controls {
+    flex-direction: column;
+  }
+
+  .hp-main, .hp-modification {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .hp-input, .modification-input {
+    width: 120px;
+  }
+}
