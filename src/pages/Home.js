@@ -5,7 +5,7 @@ import initiativeImage from '../assets/initiative-preview.png';
 function Home() {
   return (
     <div className="home-container">
-      <h1 className="main-title">Bem vindo ao Mago da Ponte</h1>
+      <h1 className="main-title">Bem vindo ao <span className="gradient-text">Mago da Ponte</span></h1>
       
       <section className="products-section">
         <div className="product-card">
