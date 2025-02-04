@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './initiative.css';
 
 function Initiative() {
   const [characters, setCharacters] = useState(() => {
