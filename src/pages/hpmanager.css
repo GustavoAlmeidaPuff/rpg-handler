@@ -45,7 +45,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.322);
   flex-wrap: wrap;
 }
 
@@ -155,5 +155,55 @@
 
   .hp-input, .modification-input {
     width: 120px;
+  }
+}
+
+.no-characters-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  font-size: 1.3rem;
+  color: #666;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  margin: 3rem auto;
+  max-width: 600px;
+  position: relative;
+  border: 2px dashed #8757f5;
+  animation: pulse 2s infinite ease-in-out;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.no-characters-message::before,
+.no-characters-message::after {
+  content: "⚔️";
+  position: absolute;
+  font-size: 1.5rem;
+  opacity: 0.7;
+}
+
+.no-characters-message::before {
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.no-characters-message::after {
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    border-color: #8757f5;
+  }
+  50% {
+    transform: scale(1.02);
+    border-color: #5e90e0;
+  }
+  100% {
+    transform: scale(1);
+    border-color: #8757f5;
   }
 }

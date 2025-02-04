@@ -72,50 +72,56 @@ function HPManager() {
     <div className="hp-manager-container">
       <h1>Gerenciador de <span className="gradient-text">Vida</span></h1>
       
-      <div className="character-list">
-        {characters.map((char, index) => (
-          <div key={index} className="character-hp-item">
-            <div className="character-info">
-              <span className="initiative-number">{char.initiative}</span>
-              <span className="character-name">{char.name}</span>
-            </div>
-            
-            <div className="hp-controls">
-              <div className="hp-main">
-                <label>Vida Total:</label>
-                <input
-                  type="number"
-                  value={hpValues[char.name] || 0}
-                  onChange={(e) => handleHPChange(char.name, e.target.value)}
-                  className="hp-input"
-                />
+      {characters.length === 0 ? (
+        <div className="no-characters-message">
+          🎲 Primeiro, adicione personagens na fila de iniciativa 🎮
+        </div>
+      ) : (
+        <div className="character-list">
+          {characters.map((char, index) => (
+            <div key={index} className="character-hp-item">
+              <div className="character-info">
+                <span className="initiative-number">{char.initiative}</span>
+                <span className="character-name">{char.name}</span>
               </div>
               
-              <div className="hp-modification">
-                <input
-                  type="number"
-                  value={modifications[char.name] || ''}
-                  onChange={(e) => handleModification(char.name, e.target.value)}
-                  placeholder="Quantidade"
-                  className="modification-input"
-                />
-                <button 
-                  onClick={() => applyModification(char.name, 'subtract')}
-                  className="subtract-button"
-                >
-                  -
-                </button>
-                <button 
-                  onClick={() => applyModification(char.name, 'add')}
-                  className="add-button"
-                >
-                  +
-                </button>
+              <div className="hp-controls">
+                <div className="hp-main">
+                  <label>Vida Total:</label>
+                  <input
+                    type="number"
+                    value={hpValues[char.name] || 0}
+                    onChange={(e) => handleHPChange(char.name, e.target.value)}
+                    className="hp-input"
+                  />
+                </div>
+                
+                <div className="hp-modification">
+                  <input
+                    type="number"
+                    value={modifications[char.name] || ''}
+                    onChange={(e) => handleModification(char.name, e.target.value)}
+                    placeholder="Quantidade"
+                    className="modification-input"
+                  />
+                  <button 
+                    onClick={() => applyModification(char.name, 'subtract')}
+                    className="subtract-button"
+                  >
+                    -
+                  </button>
+                  <button 
+                    onClick={() => applyModification(char.name, 'add')}
+                    className="add-button"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
