@@ -5,6 +5,7 @@ import Initiative from './pages/Initiative';
 import Header from './components/Header/Header.js';
 import Footer from './components/Footer/Footer.js';
 import Hp from './pages/HPmanager.js';
+import Spells from './pages/Spells.js';
 import './App.css';
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/initiative" element={<Initiative />} />
             <Route path="/hp" element={<Hp />} />
-            <Route path="/all" element={<div>All Page</div>} />
+            <Route path="/spell" element={<Spells />} />
           </Routes>
         </main>
         <Footer />
