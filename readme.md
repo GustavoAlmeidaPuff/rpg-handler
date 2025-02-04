@@ -2,12 +2,12 @@
 
 1. Clone o repositório:
    ```bash
-   git clone <URL_DO_REPOSITORIO>
+   git clone https://github.com/GustavoAlmeidaPuff/rpg-handler
    ```
 
 2. Navegue até o diretório do projeto:
    ```bash
-   cd <NOME_DO_DIRETORIO>
+   cd rpg handler
    ```
 
 3. Instale as dependências:
