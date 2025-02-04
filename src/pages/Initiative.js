@@ -1,8 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function Initiative() {
-  const [characters, setCharacters] = useState([]);
+  const [characters, setCharacters] = useState(() => {
+    // Carrega os dados do localStorage quando o componente é montado
+    const savedCharacters = localStorage.getItem('rpgInitiativeCharacters');
+    return savedCharacters ? JSON.parse(savedCharacters) : [];
+  });
   const [newCharacter, setNewCharacter] = useState({ name: '', initiative: '' });
+
+  // Atualiza o localStorage sempre que characters mudar
+  useEffect(() => {
+    localStorage.setItem('rpgInitiativeCharacters', JSON.stringify(characters));
+  }, [characters]);
 
   const handleAddCharacter = (e) => {
     e.preventDefault();
@@ -13,6 +22,14 @@ function Initiative() {
       ].sort((a, b) => b.initiative - a.initiative));
       setNewCharacter({ name: '', initiative: '' });
     }
+  };
+
+  const handleRemoveCharacter = (index) => {
+    setCharacters(characters.filter((_, i) => i !== index));
+  };
+
+  const handleClearAll = () => {
+    setCharacters([]);
   };
 
   return (
@@ -34,6 +51,11 @@ function Initiative() {
             onChange={(e) => setNewCharacter({ ...newCharacter, initiative: e.target.value })}
           />
           <button type="submit">Adicionar</button>
+          {characters.length > 0 && (
+            <button type="button" onClick={handleClearAll} className="clear-button">
+              Limpar Tudo
+            </button>
+          )}
         </form>
 
         <div className="initiative-list">
@@ -42,7 +64,7 @@ function Initiative() {
               <span className="initiative-number">{char.initiative}</span>
               <span className="character-name">{char.name}</span>
               <button 
-                onClick={() => setCharacters(characters.filter((_, i) => i !== index))}
+                onClick={() => handleRemoveCharacter(index)}
                 className="remove-button"
               >
                 Remover

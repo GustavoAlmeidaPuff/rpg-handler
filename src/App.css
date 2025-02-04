@@ -131,3 +131,17 @@
 .remove-button:hover {
   background-color: #da190b;
 }
+
+.clear-button {
+  padding: 8px 16px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.clear-button:hover {
+  background-color: #f57c00;
+}
