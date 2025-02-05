@@ -1,19 +1,31 @@
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
-// Chaves do localStorage (mantidas para migração)
+// Chaves do localStorage
 const INITIATIVE_KEY = 'rpgInitiativeCharacters';
 const HP_KEY = 'rpgCharactersHP';
+const GUEST_PREFIX = 'guest_';
 
-// Funções auxiliares para migração
-const getLocalData = (key) => {
-  const data = localStorage.getItem(key);
+// Funções para o localStorage
+const getLocalData = (key, isGuest = false) => {
+  const finalKey = isGuest ? GUEST_PREFIX + key : key;
+  const data = localStorage.getItem(finalKey);
   return data ? JSON.parse(data) : null;
 };
 
-const clearLocalData = () => {
-  localStorage.removeItem(INITIATIVE_KEY);
-  localStorage.removeItem(HP_KEY);
+const setLocalData = (key, data, isGuest = false) => {
+  const finalKey = isGuest ? GUEST_PREFIX + key : key;
+  localStorage.setItem(finalKey, JSON.stringify(data));
+};
+
+const clearLocalData = (isGuest = false) => {
+  if (isGuest) {
+    localStorage.removeItem(GUEST_PREFIX + INITIATIVE_KEY);
+    localStorage.removeItem(GUEST_PREFIX + HP_KEY);
+  } else {
+    localStorage.removeItem(INITIATIVE_KEY);
+    localStorage.removeItem(HP_KEY);
+  }
 };
 
 // Funções para o Firestore
@@ -43,41 +55,83 @@ export const getUserData = async (userId, collection = 'userData') => {
   }
 };
 
-// Funções específicas para iniciativa
+// Funções para gerenciar dados (com suporte a modo offline)
 export const saveInitiativeData = async (userId, characters) => {
-  return saveUserData(userId, { initiative: characters }, 'initiativeData');
+  if (userId) {
+    return saveUserData(userId, { initiative: characters }, 'initiativeData');
+  } else {
+    setLocalData(INITIATIVE_KEY, characters, true);
+    return true;
+  }
 };
 
 export const getInitiativeData = async (userId) => {
-  const data = await getUserData(userId, 'initiativeData');
-  return data?.initiative || [];
+  if (userId) {
+    const data = await getUserData(userId, 'initiativeData');
+    return data?.initiative || [];
+  } else {
+    return getLocalData(INITIATIVE_KEY, true) || [];
+  }
 };
 
-// Funções específicas para HP
 export const saveHPData = async (userId, hpValues) => {
-  return saveUserData(userId, { hp: hpValues }, 'hpData');
+  if (userId) {
+    return saveUserData(userId, { hp: hpValues }, 'hpData');
+  } else {
+    setLocalData(HP_KEY, hpValues, true);
+    return true;
+  }
 };
 
 export const getHPData = async (userId) => {
-  const data = await getUserData(userId, 'hpData');
-  return data?.hp || {};
+  if (userId) {
+    const data = await getUserData(userId, 'hpData');
+    return data?.hp || {};
+  } else {
+    return getLocalData(HP_KEY, true) || {};
+  }
 };
 
 // Função para migrar dados do localStorage para o Firestore
 export const migrateLocalDataToFirestore = async (userId) => {
   try {
-    const initiativeData = getLocalData(INITIATIVE_KEY);
-    const hpData = getLocalData(HP_KEY);
+    // Verifica se existem dados de convidado
+    const guestInitiativeData = getLocalData(INITIATIVE_KEY, true);
+    const guestHPData = getLocalData(HP_KEY, true);
 
-    if (initiativeData) {
-      await saveInitiativeData(userId, initiativeData);
+    // Se existirem dados de convidado, pergunta ao usuário se quer migrar
+    if (guestInitiativeData || guestHPData) {
+      const shouldMigrate = window.confirm(
+        'Encontramos dados salvos localmente. Deseja importá-los para sua conta?'
+      );
+
+      if (shouldMigrate) {
+        if (guestInitiativeData) {
+          await saveInitiativeData(userId, guestInitiativeData);
+        }
+        
+        if (guestHPData) {
+          await saveHPData(userId, guestHPData);
+        }
+      }
+
+      // Limpa os dados de convidado após a decisão
+      clearLocalData(true);
+    }
+
+    // Migra dados antigos do localStorage (se existirem)
+    const oldInitiativeData = getLocalData(INITIATIVE_KEY);
+    const oldHPData = getLocalData(HP_KEY);
+
+    if (oldInitiativeData) {
+      await saveInitiativeData(userId, oldInitiativeData);
     }
     
-    if (hpData) {
-      await saveHPData(userId, hpData);
+    if (oldHPData) {
+      await saveHPData(userId, oldHPData);
     }
 
-    // Limpa os dados do localStorage após migração bem-sucedida
+    // Limpa os dados antigos do localStorage
     clearLocalData();
     
     return true;

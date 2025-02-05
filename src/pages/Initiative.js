@@ -9,30 +9,28 @@ function Initiative() {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
 
-  // Carrega os dados do Firestore quando o componente é montado
+  // Carrega os dados quando o componente é montado
   useEffect(() => {
     const loadData = async () => {
-      if (user) {
-        try {
-          const data = await getInitiativeData(user.uid);
-          setCharacters(data);
-        } catch (error) {
-          console.error('Erro ao carregar dados de iniciativa:', error);
-        } finally {
-          setIsLoading(false);
-        }
+      try {
+        const data = await getInitiativeData(user?.uid);
+        setCharacters(data);
+      } catch (error) {
+        console.error('Erro ao carregar dados de iniciativa:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadData();
   }, [user]);
 
-  // Salva no Firestore sempre que characters mudar
+  // Salva os dados sempre que characters mudar
   useEffect(() => {
     const saveData = async () => {
-      if (user && !isLoading) {
+      if (!isLoading) {
         try {
-          await saveInitiativeData(user.uid, characters);
+          await saveInitiativeData(user?.uid, characters);
         } catch (error) {
           console.error('Erro ao salvar dados de iniciativa:', error);
         }
@@ -67,16 +65,6 @@ function Initiative() {
     setCharacters(updatedCharacters.sort((a, b) => b.initiative - a.initiative));
   };
 
-  if (!user) {
-    return (
-      <div className="initiative-container">
-        <div className="initiative-message">
-          Você precisa fazer login para usar o gerenciador de iniciativa.
-        </div>
-      </div>
-    );
-  }
-
   if (isLoading) {
     return (
       <div className="initiative-container">
@@ -91,6 +79,12 @@ function Initiative() {
     <div className="initiative-main-content">
       <div className="initiative-container">
         <h1>Ordem de <span className="gradient-text">Iniciativa</span></h1>
+        
+        {!user && (
+          <div className="guest-message">
+            Você está usando o modo offline. Para salvar seus dados permanentemente, faça login.
+          </div>
+        )}
         
         <form onSubmit={handleAddCharacter} className="initiative-form">
           <input

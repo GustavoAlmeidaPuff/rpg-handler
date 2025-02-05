@@ -12,42 +12,40 @@ function HPManager() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (user) {
-        try {
-          // Carrega a lista de personagens e seus HPs
-          const [charactersData, hpData] = await Promise.all([
-            getInitiativeData(user.uid),
-            getHPData(user.uid)
-          ]);
+      try {
+        // Carrega a lista de personagens e seus HPs
+        const [charactersData, hpData] = await Promise.all([
+          getInitiativeData(user?.uid),
+          getHPData(user?.uid)
+        ]);
 
-          setCharacters(charactersData);
-          
-          // Garante que todos os personagens tenham um valor de HP
-          const updatedHP = { ...hpData };
-          charactersData.forEach(char => {
-            if (!updatedHP[char.name]) {
-              updatedHP[char.name] = 1;
-            }
-          });
-          
-          setHpValues(updatedHP);
-        } catch (error) {
-          console.error('Erro ao carregar dados:', error);
-        } finally {
-          setIsLoading(false);
-        }
+        setCharacters(charactersData);
+        
+        // Garante que todos os personagens tenham um valor de HP
+        const updatedHP = { ...hpData };
+        charactersData.forEach(char => {
+          if (!updatedHP[char.name]) {
+            updatedHP[char.name] = 1;
+          }
+        });
+        
+        setHpValues(updatedHP);
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadData();
   }, [user]);
 
-  // Salva os valores de HP no Firestore sempre que são atualizados
+  // Salva os valores de HP sempre que são atualizados
   useEffect(() => {
     const saveHP = async () => {
-      if (user && !isLoading) {
+      if (!isLoading) {
         try {
-          await saveHPData(user.uid, hpValues);
+          await saveHPData(user?.uid, hpValues);
         } catch (error) {
           console.error('Erro ao salvar valores de HP:', error);
         }
@@ -86,16 +84,6 @@ function HPManager() {
     }));
   };
 
-  if (!user) {
-    return (
-      <div className="hp-manager-container">
-        <div className="hp-message">
-          Você precisa fazer login para usar o gerenciador de HP.
-        </div>
-      </div>
-    );
-  }
-
   if (isLoading) {
     return (
       <div className="hp-manager-container">
@@ -110,6 +98,12 @@ function HPManager() {
     <div className="hp-manager-container">
       <h1>Gerenciador de <span className="gradient-text">Vida</span></h1>
       
+      {!user && (
+        <div className="guest-message">
+          Você está usando o modo offline. Para salvar seus dados permanentemente, faça login.
+        </div>
+      )}
+
       {characters.length === 0 ? (
         <div className="no-characters-message">
           🎲 Primeiro, adicione personagens na fila de iniciativa 🎮
