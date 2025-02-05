@@ -12,9 +12,8 @@
   border-radius: 8px;
   margin-bottom: 2rem;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 1rem;
-  align-items: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -467,7 +466,11 @@
 }
 
 .translate-button.translated {
-  background-color: #28a745;
+  background-color: #6c757d;
+}
+
+.translate-button.translated:hover {
+  background-color: #5a6268;
 }
 
 .translate-button.translating {
@@ -554,5 +557,56 @@
   .copy-button {
     width: 100%;
     padding: 0.75rem;
+  }
+}
+
+.filters-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.filters-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.filter-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.filter-button.apply {
+  background-color: #007bff;
+  color: white;
+}
+
+.filter-button.apply:hover {
+  background-color: #0056b3;
+}
+
+.filter-button.clear {
+  background-color: #6c757d;
+  color: white;
+}
+
+.filter-button.clear:hover {
+  background-color: #5a6268;
+}
+
+@media (max-width: 768px) {
+  .filters-buttons {
+    flex-direction: column;
+  }
+
+  .filter-button {
+    width: 100%;
   }
 } 

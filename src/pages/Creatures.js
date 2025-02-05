@@ -7,6 +7,7 @@ const Creatures = () => {
   const [filteredCreatures, setFilteredCreatures] = useState([]);
   const [displayedCreatures, setDisplayedCreatures] = useState([]);
   const [selectedCreature, setSelectedCreature] = useState(null);
+  const [originalCreature, setOriginalCreature] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -23,7 +24,17 @@ const Creatures = () => {
     maxAC: '',
     minHP: '',
     maxHP: '',
-    challengeRating: ''
+    recommendedLevel: ''
+  });
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    name: '',
+    type: '',
+    minAC: '',
+    maxAC: '',
+    minHP: '',
+    maxHP: '',
+    recommendedLevel: ''
   });
 
   const lastCreatureElementRef = useCallback(node => {
@@ -91,19 +102,20 @@ const Creatures = () => {
 
   useEffect(() => {
     const filtered = filteredCreatures.filter(creature => {
-      const nameMatch = creature.name.toLowerCase().includes(filters.name.toLowerCase());
-      const typeMatch = !filters.type || creature.type.toLowerCase() === filters.type.toLowerCase();
-      const acMatch = (!filters.minAC || creature.armor_class[0].value >= parseInt(filters.minAC)) &&
-                     (!filters.maxAC || creature.armor_class[0].value <= parseInt(filters.maxAC));
-      const hpMatch = (!filters.minHP || creature.hit_points >= parseInt(filters.minHP)) &&
-                     (!filters.maxHP || creature.hit_points <= parseInt(filters.maxHP));
-      const crMatch = !filters.challengeRating || creature.challenge_rating === parseFloat(filters.challengeRating);
+      const nameMatch = creature.name.toLowerCase().includes(appliedFilters.name.toLowerCase());
+      const typeMatch = !appliedFilters.type || creature.type.toLowerCase() === appliedFilters.type.toLowerCase();
+      const acMatch = (!appliedFilters.minAC || creature.armor_class[0].value >= parseInt(appliedFilters.minAC)) &&
+                     (!appliedFilters.maxAC || creature.armor_class[0].value <= parseInt(appliedFilters.maxAC));
+      const hpMatch = (!appliedFilters.minHP || creature.hit_points >= parseInt(appliedFilters.minHP)) &&
+                     (!appliedFilters.maxHP || creature.hit_points <= parseInt(appliedFilters.maxHP));
+      const recommendedLevelMatch = !appliedFilters.recommendedLevel || 
+                                  Math.max(1, Math.ceil(creature.challenge_rating * 1.5)) === parseInt(appliedFilters.recommendedLevel);
 
-      return nameMatch && typeMatch && acMatch && hpMatch && crMatch;
+      return nameMatch && typeMatch && acMatch && hpMatch && recommendedLevelMatch;
     });
 
     setDisplayedCreatures(filtered);
-  }, [filters, filteredCreatures]);
+  }, [appliedFilters, filteredCreatures]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -111,7 +123,26 @@ const Creatures = () => {
       ...prev,
       [name]: value
     }));
-    setPage(1); // Resetar a paginação quando os filtros mudam
+  };
+
+  const handleApplyFilters = () => {
+    setAppliedFilters(filters);
+    setPage(1);
+  };
+
+  const handleClearFilters = () => {
+    const emptyFilters = {
+      name: '',
+      type: '',
+      minAC: '',
+      maxAC: '',
+      minHP: '',
+      maxHP: '',
+      recommendedLevel: ''
+    };
+    setFilters(emptyFilters);
+    setAppliedFilters(emptyFilters);
+    setPage(1);
   };
 
   const getRecommendedLevel = (cr) => {
@@ -120,6 +151,7 @@ const Creatures = () => {
 
   const handleCreatureClick = async (creature) => {
     setSelectedCreature(creature);
+    setOriginalCreature(creature);
     setIsTranslated(false);
     setIsTranslating(false);
   };
@@ -198,7 +230,10 @@ const Creatures = () => {
   };
 
   const handleTranslateClick = async () => {
-    if (!isTranslated && selectedCreature && !isTranslating) {
+    if (isTranslated) {
+      setSelectedCreature(originalCreature);
+      setIsTranslated(false);
+    } else if (selectedCreature && !isTranslating) {
       setIsTranslating(true);
       try {
         const translatedCreature = await translateCreatureDetails(selectedCreature);
@@ -280,64 +315,81 @@ const Creatures = () => {
   return (
     <div className="creatures-container">
       <div className="filters-section">
-        <input
-          type="text"
-          name="name"
-          placeholder="Nome da Criatura"
-          value={filters.name}
-          onChange={handleFilterChange}
-        />
-        
-        <select name="type" value={filters.type} onChange={handleFilterChange}>
-          <option value="">Todos os Tipos</option>
-          {creatureTypes.map(type => (
-            <option key={type} value={type}>{type}</option>
-          ))}
-        </select>
-
-        <div className="number-filters">
-          <div>
-            <input
-              type="number"
-              name="minAC"
-              placeholder="CA Min"
-              value={filters.minAC}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="number"
-              name="maxAC"
-              placeholder="CA Max"
-              value={filters.maxAC}
-              onChange={handleFilterChange}
-            />
-          </div>
-
-          <div>
-            <input
-              type="number"
-              name="minHP"
-              placeholder="HP Min"
-              value={filters.minHP}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="number"
-              name="maxHP"
-              placeholder="HP Max"
-              value={filters.maxHP}
-              onChange={handleFilterChange}
-            />
-          </div>
-
+        <div className="filters-inputs">
           <input
-            type="number"
-            name="challengeRating"
-            placeholder="Challenge Rating"
-            value={filters.challengeRating}
+            type="text"
+            name="name"
+            placeholder="Nome da Criatura"
+            value={filters.name}
             onChange={handleFilterChange}
-            step="0.125"
           />
+          
+          <select name="type" value={filters.type} onChange={handleFilterChange}>
+            <option value="">Todos os Tipos</option>
+            {creatureTypes.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+
+          <div className="number-filters">
+            <div>
+              <input
+                type="number"
+                name="minAC"
+                placeholder="CA Min"
+                value={filters.minAC}
+                onChange={handleFilterChange}
+              />
+              <input
+                type="number"
+                name="maxAC"
+                placeholder="CA Max"
+                value={filters.maxAC}
+                onChange={handleFilterChange}
+              />
+            </div>
+
+            <div>
+              <input
+                type="number"
+                name="minHP"
+                placeholder="HP Min"
+                value={filters.minHP}
+                onChange={handleFilterChange}
+              />
+              <input
+                type="number"
+                name="maxHP"
+                placeholder="HP Max"
+                value={filters.maxHP}
+                onChange={handleFilterChange}
+              />
+            </div>
+
+            <input
+              type="number"
+              name="recommendedLevel"
+              placeholder="Nível Recomendado"
+              value={filters.recommendedLevel}
+              onChange={handleFilterChange}
+              min="1"
+            />
+          </div>
+        </div>
+        
+        <div className="filters-buttons">
+          <button 
+            onClick={handleApplyFilters}
+            className="filter-button apply"
+          >
+            Aplicar Filtros
+          </button>
+          <button 
+            onClick={handleClearFilters}
+            className="filter-button clear"
+          >
+            Limpar Filtros
+          </button>
         </div>
       </div>
 
@@ -380,9 +432,9 @@ const Creatures = () => {
                 <button 
                   onClick={handleTranslateClick}
                   className={`translate-button ${isTranslated ? 'translated' : ''} ${isTranslating ? 'translating' : ''}`}
-                  disabled={isTranslated || isTranslating}
+                  disabled={isTranslating}
                 >
-                  {isTranslating ? 'Traduzindo...' : isTranslated ? 'Traduzido' : 'Traduzir para Português'}
+                  {isTranslating ? 'Traduzindo...' : isTranslated ? 'Voltar ao Original' : 'Traduzir para Português'}
                 </button>
               </div>
             </div>
