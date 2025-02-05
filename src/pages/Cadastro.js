@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../firebase';
 import './cadastro.css';
 
@@ -10,6 +10,20 @@ function Cadastro() {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [erro, setErro] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Verifica se há resultado de redirecionamento do Google
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        setErro('Erro ao cadastrar com Google.');
+        console.error('Erro no redirecionamento:', error);
+      });
+  }, [navigate]);
 
   const handleCadastro = async (e) => {
     e.preventDefault();
@@ -22,7 +36,7 @@ function Cadastro() {
 
     try {
       await createUserWithEmailAndPassword(auth, email, senha);
-      navigate('/'); // Redireciona para a página inicial após o cadastro
+      navigate('/');
     } catch (error) {
       switch (error.code) {
         case 'auth/email-already-in-use':
@@ -46,10 +60,20 @@ function Cadastro() {
   const handleGoogleCadastro = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      navigate('/'); // Redireciona para a página inicial após o cadastro
+      // Verifica se é um dispositivo móvel
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        // Usa redirecionamento em dispositivos móveis
+        await signInWithRedirect(auth, provider);
+      } else {
+        // Usa popup em desktops
+        await signInWithPopup(auth, provider);
+        navigate('/');
+      }
     } catch (error) {
       setErro('Erro ao cadastrar com Google.');
+      console.error('Erro no cadastro:', error);
     }
   };
 

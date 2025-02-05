@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../firebase';
 import './login.css';
 
@@ -10,13 +10,27 @@ function Login() {
   const [erro, setErro] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Verifica se há resultado de redirecionamento do Google
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        setErro('Erro ao fazer login com Google.');
+        console.error('Erro no redirecionamento:', error);
+      });
+  }, [navigate]);
+
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     setErro('');
     
     try {
       await signInWithEmailAndPassword(auth, email, senha);
-      navigate('/'); // Redireciona para a página inicial após o login
+      navigate('/');
     } catch (error) {
       switch (error.code) {
         case 'auth/invalid-email':
@@ -40,10 +54,20 @@ function Login() {
   const handleGoogleLogin = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      navigate('/'); // Redireciona para a página inicial após o login
+      // Verifica se é um dispositivo móvel
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        // Usa redirecionamento em dispositivos móveis
+        await signInWithRedirect(auth, provider);
+      } else {
+        // Usa popup em desktops
+        await signInWithPopup(auth, provider);
+        navigate('/');
+      }
     } catch (error) {
       setErro('Erro ao fazer login com Google.');
+      console.error('Erro no login:', error);
     }
   };
 
