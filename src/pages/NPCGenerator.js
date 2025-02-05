@@ -94,39 +94,30 @@ ${npc.quirks}`;
     const randomAge = Math.floor(Math.random() * 50) + 20;
     const randomSeed = generateRandomSeed();
 
-    let prompt = `Gere um NPC único e detalhado para um cenário de RPG com tema ${theme}${description ? ` no seguinte contexto: ${description}` : ''}.`;
+    let prompt = `<|system|>Você é uma API REST que retorna apenas JSON. Não adicione nada além do JSON.
 
-    if (traits) {
-      prompt += `\n\nO NPC DEVE ter as seguintes características específicas:\n${traits}`;
-    }
-
-    prompt += `\n\nPara adicionar mais originalidade, considere também estas características como inspiração (mas não necessariamente siga todas):
-- Tendência para ser ${randomTrait}
-- Aproximadamente ${randomAge} anos de idade
-- Seed de aleatoriedade: ${randomSeed}
-
-O NPC deve ter as seguintes informações:
-1. Nome completo e/ou apelido apropriado para o cenário
-2. Aparência física detalhada
-3. Personalidade e comportamento
-4. História de fundo/Background
-5. Características principais e habilidades
-6. Sugestão de atributos (força, destreza, etc) baseado na descrição
-7. Peculiaridades ou maneirismos únicos
-
-Seja criativo e evite padrões óbvios. Crie um personagem memorável e único.
-IMPORTANTE: Mantenha todas as características específicas solicitadas acima.
-
-Responda no seguinte formato JSON:
+<|format|>
 {
-  "name": "Nome do NPC",
-  "appearance": "Descrição da aparência",
-  "personality": "Descrição da personalidade",
-  "background": "História do personagem",
-  "characteristics": "Características e habilidades",
-  "statGuide": "Sugestão de atributos",
-  "quirks": "Peculiaridades"
-}`;
+  "name": "string",
+  "appearance": "string",
+  "personality": "string",
+  "background": "string",
+  "characteristics": "string",
+  "statGuide": "string",
+  "quirks": "string"
+}
+
+<|input|>
+{
+  "theme": "${theme}",
+  ${description ? `"scenario": "${description}",` : ''}
+  ${traits ? `"traits": "${traits}",` : ''}
+  "tendency": "${randomTrait}",
+  "age": ${randomAge},
+  "seed": ${randomSeed}
+}
+
+<|output|>`;
 
     return prompt;
   };
@@ -144,23 +135,90 @@ Responda no seguinte formato JSON:
         model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
         inputs: prompt,
         parameters: {
-          max_new_tokens: 1024,
-          temperature: 0.9,
-          top_p: 0.95,
-          top_k: 50,
-          repetition_penalty: 1.2,
+          max_new_tokens: 800,
+          temperature: 0.1, // Extremamente baixo para forçar consistência
+          top_p: 0.1, // Muito restritivo
+          top_k: 10, // Muito restritivo
+          repetition_penalty: 1.0,
           return_full_text: false,
+          stop: ["<", "\n\n", "```"], // Para em tags ou quebras
           seed: generateRandomSeed(),
         },
       });
 
+      console.log('Resposta bruta da IA:', response);
+      console.log('Texto gerado:', response.generated_text);
+
       try {
-        const jsonStr = response.generated_text.match(/\{[\s\S]*\}/)[0];
+        // Limpa a resposta
+        let cleanText = response.generated_text
+          .replace(/```json/g, '') // Remove marcadores de código JSON
+          .replace(/```/g, '')     // Remove outros marcadores de código
+          .trim();
+
+        // Encontra o primeiro '{' e último '}'
+        const startIndex = cleanText.indexOf('{');
+        const endIndex = cleanText.lastIndexOf('}');
+
+        if (startIndex === -1 || endIndex === -1) {
+          console.error('Texto limpo sem JSON:', cleanText);
+          throw new Error('JSON não encontrado na resposta');
+        }
+
+        // Extrai o JSON
+        const jsonStr = cleanText.substring(startIndex, endIndex + 1);
+        
+        console.log('JSON encontrado:', jsonStr);
+
+        // Tenta fazer o parse
         const generatedNPC = JSON.parse(jsonStr);
+
+        // Validação dos campos
+        const requiredFields = ['name', 'appearance', 'personality', 'background', 'characteristics', 'statGuide', 'quirks'];
+        const invalidFields = requiredFields.filter(field => {
+          const value = generatedNPC[field];
+          return !value || typeof value !== 'string' || value.trim().length < 5;
+        });
+
+        if (invalidFields.length > 0) {
+          throw new Error(`Campos inválidos ou incompletos: ${invalidFields.join(', ')}`);
+        }
+
+        // Limpa os campos
+        Object.keys(generatedNPC).forEach(key => {
+          if (typeof generatedNPC[key] === 'string') {
+            generatedNPC[key] = generatedNPC[key]
+              .trim()
+              .replace(/\s+/g, ' ');
+          }
+        });
+
         setNpc(generatedNPC);
       } catch (parseError) {
         console.error('Erro ao processar resposta:', parseError);
-        setError('Erro ao processar a resposta da IA. Tente novamente.');
+        if (parseError.message.includes('JSON')) {
+          console.log('Tentando processar resposta alternativa...');
+          // Se falhar, tenta processar removendo possíveis caracteres problemáticos
+          try {
+            const cleanerText = response.generated_text
+              .replace(/[^\x20-\x7E]/g, '') // Remove caracteres não-ASCII
+              .replace(/```/g, '')          // Remove marcadores de código
+              .replace(/\n/g, ' ')          // Remove quebras de linha
+              .trim();
+            
+            const jsonMatch = cleanerText.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) {
+              throw new Error('JSON não encontrado após limpeza');
+            }
+            
+            const generatedNPC = JSON.parse(jsonMatch[0]);
+            setNpc(generatedNPC);
+          } catch (secondError) {
+            setError(`Erro ao processar a resposta da IA: ${parseError.message}. Tente novamente.`);
+          }
+        } else {
+          setError(`Erro ao processar a resposta da IA: ${parseError.message}. Tente novamente.`);
+        }
       }
     } catch (apiError) {
       console.error('Erro na API:', apiError);
