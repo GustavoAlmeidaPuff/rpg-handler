@@ -8,7 +8,7 @@ import './AccountMenu.css';
 
 function AccountMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, isCreator } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -23,7 +23,7 @@ function AccountMenu() {
   return (
     <div className="account-menu">
       <button 
-        className="account-button"
+        className={`account-button ${isCreator ? 'creator-button' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <img 
@@ -31,12 +31,16 @@ function AccountMenu() {
           alt="Ícone da conta" 
           className="account-icon"
         />
+        {isCreator && <span className="creator-crown">👑</span>}
       </button>
 
       {isOpen && (
         <div className="account-dropdown">
           <div className="account-info">
-            <div className="user-email">{user?.email}</div>
+            <div className="user-email">
+              <span className="email-text">{user?.email}</span>
+              {isCreator && <span className="creator-badge">Criador</span>}
+            </div>
             {user?.displayName && (
               <div className="user-name">{user.displayName}</div>
             )}

@@ -1,0 +1,94 @@
+@keyframes specialGlow {
+  0% {
+    box-shadow: 0 0 5px #61dafb;
+  }
+  50% {
+    box-shadow: 0 0 20px #61dafb, 0 0 30px #61dafb;
+  }
+  100% {
+    box-shadow: 0 0 5px #61dafb;
+  }
+}
+
+@keyframes rainbowText {
+  0% { color: #ff0000; }
+  16.67% { color: #ff8000; }
+  33.33% { color: #ffff00; }
+  50% { color: #00ff00; }
+  66.67% { color: #0000ff; }
+  83.33% { color: #8000ff; }
+  100% { color: #ff0000; }
+}
+
+@keyframes floatAnimation {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.special-user .account-dropdown {
+  background: linear-gradient(135deg, #1a1c20 0%, #282c34 100%);
+  border: 2px solid #61dafb;
+  animation: specialGlow 2s infinite;
+}
+
+.special-user .user-email {
+  animation: rainbowText 5s infinite;
+  font-weight: bold;
+}
+
+.special-user .account-icon {
+  animation: floatAnimation 3s ease-in-out infinite;
+}
+
+.special-user .login-box,
+.special-user .cadastro-box {
+  border: 2px solid #61dafb;
+  animation: specialGlow 2s infinite;
+}
+
+.special-user .login-button,
+.special-user .cadastro-button {
+  background: linear-gradient(45deg, #007bff, #00e5ff);
+  transition: all 0.3s ease;
+}
+
+.special-user .login-button:hover,
+.special-user .cadastro-button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(45deg, #00e5ff, #007bff);
+}
+
+.special-user .form-group input:focus {
+  border-color: #61dafb;
+  box-shadow: 0 0 15px rgba(97, 218, 251, 0.5);
+}
+
+.special-user .gradient-text {
+  background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #00ff00, #0000ff, #8000ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: floatAnimation 3s ease-in-out infinite;
+}
+
+.special-user .hp-manager-container h1,
+.special-user .initiative-container h1 {
+  position: relative;
+}
+
+.special-user .hp-manager-container h1::after,
+.special-user .initiative-container h1::after {
+  content: '👑';
+  position: absolute;
+  top: -15px;
+  right: -25px;
+  font-size: 1.2em;
+  animation: floatAnimation 3s ease-in-out infinite;
+} 

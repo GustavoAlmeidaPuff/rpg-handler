@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { auth } from '../firebase';
 import { onAuthStateChanged, getRedirectResult } from 'firebase/auth';
 import { migrateLocalDataToFirestore } from '../services/dataService';
+import '../styles/special-user.css';
 
 const AuthContext = createContext();
 
@@ -40,18 +41,29 @@ export function AuthProvider({ children }) {
           console.error('Erro ao migrar dados:', error);
         }
       }
+
+      // Adiciona ou remove a classe special-user com base no email
+      if (currentUser?.email === 'gu.almeidan2007@gmail.com') {
+        document.body.classList.add('special-user');
+      } else {
+        document.body.classList.remove('special-user');
+      }
       
       setUser(currentUser);
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      document.body.classList.remove('special-user');
+    };
   }, [dataMigrated]);
 
   const value = {
     user,
     loading,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    isCreator: user?.email === 'gu.almeidan2007@gmail.com'
   };
 
   return (
