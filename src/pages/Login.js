@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
 import './login.css';
 
 function Login() {
@@ -9,20 +10,14 @@ function Login() {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const navigate = useNavigate();
+  const { user } = useAuth();
 
+  // Redireciona se já estiver autenticado
   useEffect(() => {
-    // Verifica se há resultado de redirecionamento do Google
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          navigate('/');
-        }
-      })
-      .catch((error) => {
-        setErro('Erro ao fazer login com Google.');
-        console.error('Erro no redirecionamento:', error);
-      });
-  }, [navigate]);
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
@@ -30,8 +25,8 @@ function Login() {
     
     try {
       await signInWithEmailAndPassword(auth, email, senha);
-      navigate('/');
     } catch (error) {
+      console.error('Erro no login com email:', error);
       switch (error.code) {
         case 'auth/invalid-email':
           setErro('Email inválido.');
@@ -48,26 +43,6 @@ function Login() {
         default:
           setErro('Ocorreu um erro ao fazer login.');
       }
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      // Verifica se é um dispositivo móvel
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-      if (isMobile) {
-        // Usa redirecionamento em dispositivos móveis
-        await signInWithRedirect(auth, provider);
-      } else {
-        // Usa popup em desktops
-        await signInWithPopup(auth, provider);
-        navigate('/');
-      }
-    } catch (error) {
-      setErro('Erro ao fazer login com Google.');
-      console.error('Erro no login:', error);
     }
   };
 
@@ -102,23 +77,9 @@ function Login() {
           </div>
 
           <button type="submit" className="login-button">
-            Entrar com Email
+            Entrar
           </button>
         </form>
-
-        <div className="divider">ou</div>
-
-        <button 
-          onClick={handleGoogleLogin}
-          className="google-button"
-        >
-          <img 
-            src="https://www.google.com/favicon.ico" 
-            alt="Google icon" 
-            className="google-icon"
-          />
-          Entrar com Google
-        </button>
 
         <p className="signup-text">
           Não tem uma conta? <Link to="/cadastro" className="signup-link">Cadastre-se</Link>
