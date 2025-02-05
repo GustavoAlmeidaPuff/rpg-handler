@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './home.css';
+import '../styles/global.css';
 import initiativeImage from '../assets/initiative-preview.png';
 import hpImage from '../assets/hp-preview.png';
 import spellsImage from '../assets/spells-preview.png';
@@ -39,7 +40,7 @@ function Home() {
 
   return (
     <div className="home-container">
-      <h1 className="main-title">Bem vindo ao <span className="gradient-text">Mago da Ponte</span></h1>
+      <h1 className="page-title"><span className='normal-text'>Bem vindo ao</span> <span className="gradient-text">Mago da Ponte</span></h1>
       <p className="slogan">
         O site que ajuda você, <span className="highlight-text">mestre</span>!
         <span className="slogan-subtitle">(ou jogador, quem sabe)</span>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import './creatures.css';
+import '../styles/global.css';
 
 const Creatures = () => {
   const [creatures, setCreatures] = useState([]);
@@ -343,7 +344,7 @@ const Creatures = () => {
 
   return (
     <div className="creatures-container">
-      <h1 className="page-title">Criaturas</h1>
+      <h1 className="page-title"><span className="gradient-text">Criaturas d&d 5e</span></h1>
       {isLoading ? (
         <div className="loading-container">
           <div className="loading-spinner"></div>

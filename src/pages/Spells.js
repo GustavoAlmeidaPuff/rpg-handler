@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './spells.css';
 import { Link } from 'react-router-dom';
+import '../styles/global.css';
 
 function Spells() {
   const [spells, setSpells] = useState([]);
@@ -108,7 +109,7 @@ function Spells() {
 
   return (
     <div className="spells-container">
-      <h1>Lista de <span className="gradient-text">Magias D&D 5e</span></h1>
+      <h1 className="page-title"><span className='normal-text'>Lista de</span> <span className="gradient-text">Magias</span> <span className='normal-text'>D&D 5e</span>  </h1>
 
       <div className="filters">
         <input

@@ -3,6 +3,7 @@ import { HfInference } from '@huggingface/inference';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import './npcgenerator.css';
+import '../styles/global.css';
 
 function NPCGenerator() {
   const [theme, setTheme] = useState('');
@@ -192,7 +193,7 @@ Responda no seguinte formato JSON:
 
   return (
     <div className="npc-generator-container">
-      <h1>Gerador de <span className="gradient-text">NPCs</span></h1>
+      <h1 className="page-title"><span className="normal-text">Gerador de </span><span className="gradient-text">NPCs</span></h1>
       
       <div className="generator-form">
         <div className="form-group">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { getHPData, saveHPData, getInitiativeData } from '../services/dataService';
 import './hpmanager.css';
+import '../styles/global.css';
 
 function HPManager() {
   const [characters, setCharacters] = useState([]);
@@ -96,7 +97,7 @@ function HPManager() {
 
   return (
     <div className="hp-manager-container">
-      <h1>Gerenciador de <span className="gradient-text">Vida</span></h1>
+      <h1 className="page-title"><span className='normal-text'>Gerenciador de</span> <span className="gradient-text">Vida</span></h1>
       
       {!user && (
         <div className="guest-message">
