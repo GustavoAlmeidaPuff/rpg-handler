@@ -705,4 +705,89 @@
     font-size: 2rem;
     margin-bottom: 1.5rem;
   }
+}
+
+.attacks {
+  background-color: #f8f9fa;
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 1.5rem;
+}
+
+.attacks h3 {
+  color: #007bff;
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+}
+
+.attack-item {
+  padding: 1rem;
+  background-color: white;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  border: 1px solid #eee;
+}
+
+.attack-item:last-child {
+  margin-bottom: 0;
+}
+
+.attack-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.attack-header strong {
+  color: #495057;
+  font-size: 1.1rem;
+}
+
+.attack-bonus {
+  background-color: #e9ecef;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.attack-damage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.damage-item {
+  background-color: #f8f9fa;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #666;
+  border: 1px solid #eee;
+}
+
+.attack-description {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .attack-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .attack-damage {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .damage-item {
+    width: fit-content;
+  }
 } 

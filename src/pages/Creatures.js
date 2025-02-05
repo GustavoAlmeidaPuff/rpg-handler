@@ -274,6 +274,44 @@ const Creatures = () => {
     }
   };
 
+  const extractAttacks = (actions) => {
+    if (!actions) return [];
+    
+    return actions
+      .filter(action => {
+        // Filtra ações que são ataques (contém informações de ataque/dano)
+        const hasAttackRoll = action.desc.includes('attack roll') || action.desc.includes('to hit');
+        const hasDamage = action.desc.includes('damage');
+        return hasAttackRoll || hasDamage;
+      })
+      .map(action => {
+        const attack = {
+          name: action.name,
+          toHit: null,
+          damage: [],
+          desc: action.desc
+        };
+
+        // Extrai o bônus de ataque
+        const toHitMatch = action.desc.match(/([+-]\d+) to hit/);
+        if (toHitMatch) {
+          attack.toHit = toHitMatch[1];
+        }
+
+        // Extrai os danos
+        const damageRegex = /(\d+\s*\([^)]+\)|(?:\d+\s*)+)\s*([\w\s]+)\s*damage/g;
+        let damageMatch;
+        while ((damageMatch = damageRegex.exec(action.desc)) !== null) {
+          attack.damage.push({
+            damage: damageMatch[1],
+            type: damageMatch[2].trim()
+          });
+        }
+
+        return attack;
+      });
+  };
+
   return (
     <div className="creatures-container">
       <h1 className="page-title">Criaturas</h1>
@@ -425,6 +463,28 @@ const Creatures = () => {
                       <h3>Proficiências</h3>
                       {selectedCreature.proficiencies.map((prof, index) => (
                         <p key={index}>{prof.proficiency.name}: +{prof.value}</p>
+                      ))}
+                    </div>
+                  )}
+
+                  {selectedCreature.actions?.length > 0 && (
+                    <div className="attacks">
+                      <h3>Ataques</h3>
+                      {extractAttacks(selectedCreature.actions).map((attack, index) => (
+                        <div key={index} className="attack-item">
+                          <div className="attack-header">
+                            <strong>{attack.name}</strong>
+                            {attack.toHit && <span className="attack-bonus">{attack.toHit} para acertar</span>}
+                          </div>
+                          <div className="attack-damage">
+                            {attack.damage.map((dmg, i) => (
+                              <span key={i} className="damage-item">
+                                {dmg.damage} de dano {dmg.type}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="attack-description">{attack.desc}</div>
+                        </div>
                       ))}
                     </div>
                   )}
