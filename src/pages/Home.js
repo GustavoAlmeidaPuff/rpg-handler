@@ -50,6 +50,27 @@ function Home() {
       </p>
       
       <section className="products-section">
+
+        <CardLink to="/creatures">
+          <div className="product-card">
+            <div className="card-image">
+              <img src={creaturesImage} alt="Preview da lista de criaturas" />
+            </div>
+            <h2>Lista de Criaturas</h2>
+            <p>Consulte todas as criaturas do D&D 5e</p>
+          </div>
+        </CardLink>
+
+        <CardLink to="/npc-generator">
+          <div className="product-card">
+            <div className="card-image">
+              <img src={npcGeneratorImage} alt="Preview do gerador de NPCs" />
+            </div>
+            <h2>Gerador de NPCs</h2>
+            <p>Crie NPCs únicos com IA para sua campanha</p>
+          </div>
+        </CardLink>
+
         <CardLink to="/initiative">
           <div className="product-card">
             <div className="card-image">
@@ -80,25 +101,9 @@ function Home() {
           </div>
         </CardLink>
 
-        <CardLink to="/creatures">
-          <div className="product-card">
-            <div className="card-image">
-              <img src={creaturesImage} alt="Preview da lista de criaturas" />
-            </div>
-            <h2>Lista de Criaturas</h2>
-            <p>Consulte todas as criaturas do D&D 5e</p>
-          </div>
-        </CardLink>
+        
 
-        <CardLink to="/npc-generator">
-          <div className="product-card">
-            <div className="card-image">
-              <img src={npcGeneratorImage} alt="Preview do gerador de NPCs" />
-            </div>
-            <h2>Gerador de NPCs</h2>
-            <p>Crie NPCs únicos com IA para sua campanha</p>
-          </div>
-        </CardLink>
+        
       </section>
     </div>
   );
