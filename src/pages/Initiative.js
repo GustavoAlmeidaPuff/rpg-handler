@@ -96,7 +96,10 @@ function Initiative() {
   return (
     <div className="initiative-main-content">
       <div className="initiative-container">
-        <h1 className='page-title'><span className='normal-text'>Ordem de</span> <span className="gradient-text">Iniciativa</span></h1>
+        <h1 className='page-title'>
+          <span className='normal-text'>Ordem de</span>
+          <span className="gradient-text">Iniciativa</span>
+        </h1>
         
         {!user && (
           <div className="guest-message">

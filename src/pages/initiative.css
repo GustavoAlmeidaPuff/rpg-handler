@@ -15,6 +15,7 @@
   margin-bottom: 2rem;
   font-size: 2.5rem;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 0.2em;
@@ -27,6 +28,7 @@
   background-clip: text;
   color: transparent;
   display: inline-block;
+  font-size: 1.2em;
 }
 
 /* Estilo especial para usuário especial - cores diferentes */
@@ -210,6 +212,14 @@
     text-align: center;
   }
 
+  .initiative-container h1 {
+    font-size: 2rem;
+  }
+
+  .initiative-container h1 .gradient-text {
+    font-size: 1.1em;
+  }
+
   h1 {
     font-size: 24px;
     text-align: center;
@@ -218,6 +228,16 @@
 
   .initiative-list {
     width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .initiative-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .initiative-container h1 .gradient-text {
+    font-size: 1em;
   }
 }
 

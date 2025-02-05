@@ -9,9 +9,14 @@
   margin-bottom: 2rem;
   font-size: 2.5rem;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 0.2em;
+}
+
+.hp-manager-container h1 .gradient-text {
+  font-size: 1.2em;
 }
 
 .gradient-text {
@@ -147,6 +152,24 @@
 
   .hp-input, .modification-input {
     width: 120px;
+  }
+
+  .hp-manager-container h1 {
+    font-size: 2rem;
+  }
+
+  .hp-manager-container h1 .gradient-text {
+    font-size: 1.1em;
+  }
+}
+
+@media (max-width: 480px) {
+  .hp-manager-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .hp-manager-container h1 .gradient-text {
+    font-size: 1em;
   }
 }
 

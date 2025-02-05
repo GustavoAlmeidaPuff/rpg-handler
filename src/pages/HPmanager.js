@@ -97,7 +97,10 @@ function HPManager() {
 
   return (
     <div className="hp-manager-container">
-      <h1 className="page-title"><span className='normal-text'>Gerenciador de</span> <span className="gradient-text">Vida</span></h1>
+      <h1 className="page-title">
+        <span className='normal-text'>Gerenciador de</span>
+        <span className="gradient-text">Vida</span>
+      </h1>
       
       {!user && (
         <div className="guest-message">

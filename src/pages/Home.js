@@ -40,7 +40,10 @@ function Home() {
 
   return (
     <div className="home-container">
-      <h1 className="page-title"><span className='normal-text'>Bem vindo ao</span> <span className="gradient-text">Mago da Ponte</span></h1>
+      <h1 className="page-title">
+        <span className='normal-text'>Bem vindo ao</span>
+        <span className="gradient-text">Mago da Ponte!</span>
+      </h1>
       <p className="slogan">
         O site que ajuda você, <span className="highlight-text">mestre</span>!
         <span className="slogan-subtitle">(ou jogador, quem sabe)</span>
