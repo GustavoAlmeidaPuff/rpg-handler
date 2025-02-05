@@ -37,6 +37,8 @@
   gap: 10px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
 .initiative-form input {
@@ -46,6 +48,7 @@
   font-size: 16px;
   flex: 1;
   min-width: 120px;
+  max-width: 300px;
 }
 
 .initiative-form button {
@@ -156,24 +159,32 @@
 
   .initiative-container {
     padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .initiative-form {
     flex-direction: column;
     gap: 15px;
+    width: 100%;
   }
 
   .initiative-form input {
     width: 100%;
+    max-width: 100%;
   }
 
   .initiative-form button {
     width: 100%;
+    max-width: 100%;
   }
 
   .character-item {
     padding: 15px;
     gap: 10px;
+    justify-content: center;
+    text-align: center;
   }
 
   .initiative-number {
@@ -185,11 +196,16 @@
     width: 100%;
     order: -1;
     margin-bottom: 5px;
+    text-align: center;
   }
 
   h1 {
     font-size: 24px;
     text-align: center;
     margin-bottom: 20px;
+  }
+
+  .initiative-list {
+    width: 100%;
   }
 }
