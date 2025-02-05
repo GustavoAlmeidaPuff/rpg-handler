@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HfInference } from '@huggingface/inference';
 import './npcgenerator.css';
 
@@ -9,6 +9,19 @@ function NPCGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [loadingTime, setLoadingTime] = useState(0);
+
+  useEffect(() => {
+    let interval;
+    if (isLoading) {
+      interval = setInterval(() => {
+        setLoadingTime(prev => prev + 1);
+      }, 1000);
+    } else {
+      setLoadingTime(0);
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   const themes = [
     'Fantasia Medieval',
@@ -87,6 +100,7 @@ Responda no seguinte formato JSON:
   const handleGenerateNPC = async () => {
     setIsLoading(true);
     setError(null);
+    setNpc(null); // Limpa o NPC anterior
 
     try {
       const hf = new HfInference(process.env.REACT_APP_HUGGINGFACE_TOKEN);
@@ -156,6 +170,25 @@ Responda no seguinte formato JSON:
         >
           {isLoading ? 'Gerando NPC...' : 'Gerar NPC'}
         </button>
+
+        {isLoading && (
+          <div className="loading-container">
+            <div className="loading-animation">
+              <div className="dice-container">
+                <div className="dice"></div>
+              </div>
+            </div>
+            <p className="loading-text">
+              Gerando seu NPC... {loadingTime}s
+            </p>
+            <p className="loading-flavor-text">
+              {loadingTime < 5 ? "Rolando dados..." : 
+               loadingTime < 10 ? "Consultando o grimório..." : 
+               loadingTime < 15 ? "Invocando personalidade..." : 
+               "Finalizando os detalhes..."}
+            </p>
+          </div>
+        )}
 
         {error && (
           <div className="error-message">
