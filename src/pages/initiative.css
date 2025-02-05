@@ -4,28 +4,6 @@
   margin: 0 auto;
 }
 
-.gradient-text {
-  background: linear-gradient(45deg, #8757f5, #57a05d, #5e90e0, #72d5e2, rgb(224, 62, 124));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
-  animation: gradient 5s ease infinite;
-  background-size: 300% 300%;
-}
-
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 .initiative-container {
   background-color: #fff;
   border-radius: 8px;
@@ -228,4 +206,58 @@
   font-size: 1em;
   margin-right: 6px;
   opacity: 0.9;
+}
+
+/* Estilos para as condições */
+.character-item.condition-agarrado { background-color: #ffd7b5; }
+.character-item.condition-amedrontado { background-color: #e6d0ff; }
+.character-item.condition-atordoado { background-color: #ffd9e6; }
+.character-item.condition-caido { background-color: #d9d9d9; }
+.character-item.condition-cego { background-color: #000000; color: white; }
+.character-item.condition-confuso { background-color: #ffe6cc; }
+.character-item.condition-contido { background-color: #b3b3b3; }
+.character-item.condition-desafiado { background-color: #ffcccc; }
+.character-item.condition-dominado { background-color: #e6ccff; }
+.character-item.condition-enfeiticado { background-color: #ffb3ff; }
+.character-item.condition-envenenado { background-color: #ccffcc; }
+.character-item.condition-exaustao { background-color: #ffebcc; }
+.character-item.condition-incapacitado { background-color: #ffcccc; }
+.character-item.condition-inconsciente { background-color: #ff9999; }
+.character-item.condition-invisivel { background-color: #f2f2f2; opacity: 0.7; }
+.character-item.condition-marcado { background-color: #ffcccc; }
+.character-item.condition-paralisado { background-color: #e6e6ff; }
+.character-item.condition-petrificado { background-color: #cccccc; }
+.character-item.condition-possuido { background-color: #ffe6e6; }
+.character-item.condition-rastreado { background-color: #fff2cc; }
+.character-item.condition-surdo { background-color: #e6ffff; }
+
+.condition-badge {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.1);
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.condition-select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin-left: 8px;
+  font-size: 14px;
+  min-width: 120px;
+}
+
+@media screen and (max-width: 600px) {
+  .condition-select {
+    width: 100%;
+    margin: 8px 0;
+  }
+  
+  .condition-badge {
+    width: 100%;
+    text-align: center;
+    margin: 4px 0;
+  }
 }

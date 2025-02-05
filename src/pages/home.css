@@ -13,18 +13,8 @@
 }
 
 .gradient-text {
-  background: linear-gradient(45deg, 
-    #57a05d,  /* Verde */
-    #5e90e0,  /* Azul */
-    #8757f5   /* Roxo */
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: inherit;
   display: inline-block;
-  animation: gradient 5s ease infinite;
-  background-size: 200% 200%;
-  font-weight: bold;
 }
 
 .products-section {
@@ -147,12 +137,6 @@
   margin-top: 0.7rem;
   font-style: italic;
   font-family: 'Arial', sans-serif;
-}
-
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 @media (max-width: 768px) {

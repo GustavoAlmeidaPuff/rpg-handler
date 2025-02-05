@@ -11,25 +11,8 @@
 }
 
 .gradient-text {
-  background: linear-gradient(45deg, #8757f5, #57a05d, #5e90e0, #72d5e2, rgb(224, 62, 124));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: inherit;
   display: inline-block;
-  animation: gradient 5s ease infinite;
-  background-size: 300% 300%;
-}
-
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
 }
 
 .character-list {

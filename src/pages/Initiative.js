@@ -3,9 +3,17 @@ import { useAuth } from '../contexts/AuthContext';
 import { getInitiativeData, saveInitiativeData } from '../services/dataService';
 import './initiative.css';
 
+const CONDITIONS = [
+  'Agarrado', 'Amedrontado', 'Atordoado', 'Caído', 'Cego',
+  'Confuso', 'Contido', 'Desafiado', 'Dominado', 'Enfeitiçado',
+  'Envenenado', 'Exaustão', 'Incapacitado', 'Inconsciente',
+  'Invisível', 'Marcado', 'Paralisado', 'Petrificado',
+  'Possuído', 'Rastreado', 'Surdo'
+];
+
 function Initiative() {
   const [characters, setCharacters] = useState([]);
-  const [newCharacter, setNewCharacter] = useState({ name: '', initiative: '' });
+  const [newCharacter, setNewCharacter] = useState({ name: '', initiative: '', condition: '' });
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
 
@@ -45,9 +53,13 @@ function Initiative() {
     if (newCharacter.name && newCharacter.initiative) {
       setCharacters([
         ...characters,
-        { ...newCharacter, initiative: parseInt(newCharacter.initiative) }
+        { 
+          ...newCharacter, 
+          initiative: parseInt(newCharacter.initiative),
+          condition: newCharacter.condition || ''
+        }
       ].sort((a, b) => b.initiative - a.initiative));
-      setNewCharacter({ name: '', initiative: '' });
+      setNewCharacter({ name: '', initiative: '', condition: '' });
     }
   };
 
@@ -65,6 +77,12 @@ function Initiative() {
     setCharacters(updatedCharacters.sort((a, b) => b.initiative - a.initiative));
   };
 
+  const handleConditionChange = (index, condition) => {
+    const updatedCharacters = [...characters];
+    updatedCharacters[index].condition = condition;
+    setCharacters(updatedCharacters);
+  };
+
   if (isLoading) {
     return (
       <div className="initiative-container">
@@ -78,7 +96,7 @@ function Initiative() {
   return (
     <div className="initiative-main-content">
       <div className="initiative-container">
-        <h1>Ordem de <span className="gradient-text">Iniciativa</span></h1>
+        <h1>Ordem de Iniciativa</h1>
         
         {!user && (
           <div className="guest-message">
@@ -101,6 +119,18 @@ function Initiative() {
             value={newCharacter.initiative}
             onChange={(e) => setNewCharacter({ ...newCharacter, initiative: e.target.value })}
           />
+          <select
+            className="condition-select"
+            value={newCharacter.condition}
+            onChange={(e) => setNewCharacter({ ...newCharacter, condition: e.target.value })}
+          >
+            <option value="">Sem Condição</option>
+            {CONDITIONS.map(condition => (
+              <option key={condition} value={condition.toLowerCase()}>
+                {condition}
+              </option>
+            ))}
+          </select>
           <button type="submit">Adicionar</button>
           {characters.length > 0 && (
             <button type="button" onClick={handleClearAll} className="clear-button">
@@ -111,14 +141,36 @@ function Initiative() {
 
         <div className="initiative-list">
           {characters.map((char, index) => (
-            <div key={index} className="character-item">
+            <div 
+              key={index} 
+              className={`character-item ${char.condition ? `condition-${char.condition}` : ''}`}
+            >
               <input
                 type="number"
                 className="initiative-number editable"
                 value={char.initiative}
                 onChange={(e) => handleInitiativeChange(index, e.target.value)}
               />
-              <span className="character-name">{char.name}</span>
+              <span className="character-name">
+                {char.name}
+                {char.condition && (
+                  <span className="condition-badge">
+                    {char.condition.charAt(0).toUpperCase() + char.condition.slice(1)}
+                  </span>
+                )}
+              </span>
+              <select
+                className="condition-select"
+                value={char.condition}
+                onChange={(e) => handleConditionChange(index, e.target.value)}
+              >
+                <option value="">Sem Condição</option>
+                {CONDITIONS.map(condition => (
+                  <option key={condition} value={condition.toLowerCase()}>
+                    {condition}
+                  </option>
+                ))}
+              </select>
               <button 
                 onClick={() => handleRemoveCharacter(index)}
                 className="remove-button"

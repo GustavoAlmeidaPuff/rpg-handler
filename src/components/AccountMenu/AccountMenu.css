@@ -1,5 +1,6 @@
 .account-menu {
   position: relative;
+  display: inline-block;
 }
 
 .account-button {
@@ -9,15 +10,13 @@
   padding: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative;
+  gap: 8px;
 }
 
 .account-icon {
   width: 24px;
   height: 24px;
   filter: invert(100%);
-  transition: opacity 0.3s ease;
 }
 
 .account-button:hover .account-icon {
@@ -25,7 +24,8 @@
 }
 
 .creator-button {
-  transform-origin: center;
+  display: flex;
+  align-items: center;
 }
 
 .creator-crown {
@@ -33,18 +33,16 @@
   top: -10px;
   right: -10px;
   font-size: 14px;
-  animation: floatAnimation 3s ease-in-out infinite;
 }
 
 .creator-badge {
   margin-left: 8px;
   padding: 2px 6px;
-  background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #00ff00, #0000ff, #8000ff);
+  background: #135bcf;
   border-radius: 4px;
   font-size: 0.8em;
   color: white;
   font-weight: bold;
-  animation: rainbowText 5s infinite;
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -123,10 +121,49 @@
   cursor: pointer;
   font-size: 0.9rem;
   text-align: left;
-  transition: background-color 0.3s ease;
   border-radius: 4px;
 }
 
 .logout-button:hover {
   background-color: rgba(255, 77, 77, 0.1);
+}
+
+.crown-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.menu-content {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  min-width: 200px;
+  z-index: 1000;
+  margin-top: 8px;
+  display: block;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background-color: #f5f5f5;
+}
+
+.menu-item.logout {
+  color: #dc3545;
+}
+
+.menu-item.logout:hover {
+  background-color: #ffebee;
 } 
