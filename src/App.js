@@ -9,6 +9,8 @@ import Spells from './pages/Spells';
 import SpellDetail from './pages/SpellDetail';
 import Creatures from './pages/Creatures.js';
 import NPCGenerator from './pages/NPCGenerator';
+import Login from './pages/Login';
+import Cadastro from './pages/Cadastro';
 import './App.css';
 
 function App() {
@@ -25,6 +27,8 @@ function App() {
             <Route path="/spells/:index" element={<SpellDetail />} />
             <Route path="/creatures" element={<Creatures />} />
             <Route path="/npc-generator" element={<NPCGenerator />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/cadastro" element={<Cadastro />} />
           </Routes>
         </main>
         <Footer />
