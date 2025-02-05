@@ -81,6 +81,8 @@
   padding: 0.3rem 0.8rem;
   border-radius: 4px;
   font-size: 0.9rem;
+  min-width: 80px;
+  text-align: center;
 }
 
 .spell-description {
@@ -130,6 +132,60 @@
   }
 }
 
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.name-filter,
+.level-filter {
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.name-filter {
+  flex: 1;
+}
+
+.level-filter {
+  width: 200px;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.spell-details-link {
+  text-decoration: none;
+  color: white;
+  background-color: #135bcf;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.spell-details-link:hover {
+  background-color: #0f4aa8;
+}
+
+.spell-school {
+  color: #666;
+  font-style: italic;
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
   .spells-container {
     padding: 1rem;
@@ -137,5 +193,13 @@
 
   .spell-header {
     flex-wrap: wrap;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .level-filter {
+    width: 100%;
   }
 }

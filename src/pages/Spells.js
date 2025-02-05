@@ -2,80 +2,101 @@ import React, { useState, useEffect } from 'react';
 import './spells.css';
 
 function Spells() {
-  const [spells, setSpells] = useState(() => {
-    const savedSpells = localStorage.getItem('rpgSpells');
-    return savedSpells ? JSON.parse(savedSpells) : [];
-  });
-  const [newSpell, setNewSpell] = useState({
-    name: '',
-    level: '',
-    description: ''
-  });
+  const [spells, setSpells] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [nameFilter, setNameFilter] = useState('');
+  const [levelFilter, setLevelFilter] = useState('all');
 
   useEffect(() => {
-    localStorage.setItem('rpgSpells', JSON.stringify(spells));
-  }, [spells]);
+    const fetchSpellDetails = async () => {
+      try {
+        const response = await fetch('https://www.dnd5eapi.co/api/spells');
+        const data = await response.json();
+        
+        // Buscar detalhes de cada magia
+        const detailsPromises = data.results.map(spell =>
+          fetch(`https://www.dnd5eapi.co${spell.url}`)
+            .then(res => res.json())
+        );
+        
+        const spellsWithDetails = await Promise.all(detailsPromises);
+        setSpells(spellsWithDetails);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching spells:', error);
+        setLoading(false);
+      }
+    };
 
-  const handleAddSpell = (e) => {
-    e.preventDefault();
-    if (newSpell.name && newSpell.level) {
-      setSpells([...spells, newSpell]);
-      setNewSpell({ name: '', level: '', description: '' });
-    }
-  };
+    fetchSpellDetails();
+  }, []);
 
-  const handleRemoveSpell = (index) => {
-    setSpells(spells.filter((_, i) => i !== index));
-  };
+  const filteredSpells = spells.filter(spell => {
+    const nameMatch = spell.name.toLowerCase().includes(nameFilter.toLowerCase());
+    const levelMatch = levelFilter === 'all' || spell.level === parseInt(levelFilter);
+    return nameMatch && levelMatch;
+  });
+
+  if (loading) {
+    return (
+      <div className="spells-container">
+        <div className="loading">Carregando magias...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="spells-container">
-      <h1>Lista de <span className="gradient-text">Magias</span></h1>
+      <h1>Lista de <span className="gradient-text">Magias D&D 5e</span></h1>
 
-      <form onSubmit={handleAddSpell} className="spell-form">
+      <div className="filters">
         <input
           type="text"
-          placeholder="Nome da Magia"
-          value={newSpell.name}
-          onChange={(e) => setNewSpell({ ...newSpell, name: e.target.value })}
+          placeholder="Filtrar por nome..."
+          value={nameFilter}
+          onChange={(e) => setNameFilter(e.target.value)}
+          className="name-filter"
         />
-        <input
-          type="number"
-          placeholder="Nível"
-          value={newSpell.level}
-          onChange={(e) => setNewSpell({ ...newSpell, level: e.target.value })}
-          min="0"
-          max="9"
-        />
-        <textarea
-          placeholder="Descrição da Magia"
-          value={newSpell.description}
-          onChange={(e) => setNewSpell({ ...newSpell, description: e.target.value })}
-        />
-        <button type="submit">Adicionar Magia</button>
-      </form>
+        <select
+          value={levelFilter}
+          onChange={(e) => setLevelFilter(e.target.value)}
+          className="level-filter"
+        >
+          <option value="all">Todos os níveis</option>
+          <option value="0">Nível 0 (Truques)</option>
+          <option value="1">Nível 1</option>
+          <option value="2">Nível 2</option>
+          <option value="3">Nível 3</option>
+          <option value="4">Nível 4</option>
+          <option value="5">Nível 5</option>
+          <option value="6">Nível 6</option>
+          <option value="7">Nível 7</option>
+          <option value="8">Nível 8</option>
+          <option value="9">Nível 9</option>
+        </select>
+      </div>
 
       <div className="spells-list">
-        {spells.length === 0 ? (
+        {filteredSpells.length === 0 ? (
           <div className="no-spells-message">
-            🎲 Adicione suas magias para começar! ✨
+            Nenhuma magia encontrada com os filtros atuais.
           </div>
         ) : (
-          spells.map((spell, index) => (
-            <div key={index} className="spell-card">
+          filteredSpells.map((spell) => (
+            <div key={spell.index} className="spell-card">
               <div className="spell-header">
                 <h3>{spell.name}</h3>
                 <span className="spell-level">Nível {spell.level}</span>
-                <button 
-                  onClick={() => handleRemoveSpell(index)}
-                  className="remove-spell-button"
+                <a 
+                  href={`https://www.dnd5eapi.co${spell.url}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="spell-details-link"
                 >
-                  ×
-                </button>
+                  Ver detalhes
+                </a>
               </div>
-              {spell.description && (
-                <p className="spell-description">{spell.description}</p>
-              )}
+              <p className="spell-school">{spell.school.name}</p>
             </div>
           ))
         )}
