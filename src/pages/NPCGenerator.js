@@ -8,6 +8,7 @@ function NPCGenerator() {
   const [npc, setNpc] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const themes = [
     'Fantasia Medieval',
@@ -22,6 +23,42 @@ function NPCGenerator() {
     'Piratas',
     'Espacial/Sci-Fi'
   ];
+
+  const formatNPCToText = (npc) => {
+    return `Nome: ${npc.name}
+
+Aparência:
+${npc.appearance}
+
+Personalidade:
+${npc.personality}
+
+História:
+${npc.background}
+
+Características:
+${npc.characteristics}
+
+Guia de Atributos:
+${npc.statGuide}
+
+Peculiaridades:
+${npc.quirks}`;
+  };
+
+  const handleCopyNPC = async () => {
+    if (npc) {
+      try {
+        const text = formatNPCToText(npc);
+        await navigator.clipboard.writeText(text);
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000); // Reset após 2 segundos
+      } catch (err) {
+        console.error('Erro ao copiar:', err);
+        setError('Não foi possível copiar o texto. Tente novamente.');
+      }
+    }
+  };
 
   const generatePrompt = (theme, description) => {
     return `Gere um NPC detalhado para um cenário de RPG com tema ${theme}${description ? ` no seguinte contexto: ${description}` : ''}.
@@ -129,7 +166,15 @@ Responda no seguinte formato JSON:
 
       {npc && (
         <div className="npc-card">
-          <h2>{npc.name}</h2>
+          <div className="npc-header">
+            <h2>{npc.name}</h2>
+            <button 
+              onClick={handleCopyNPC}
+              className={`copy-button ${copySuccess ? 'copied' : ''}`}
+            >
+              {copySuccess ? 'Copiado!' : 'Copiar NPC'}
+            </button>
+          </div>
           
           <div className="npc-section">
             <h3>Aparência</h3>

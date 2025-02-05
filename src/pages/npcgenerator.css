@@ -107,11 +107,45 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.npc-card h2 {
-  color: #135bcf;
+.npc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid #eee;
+}
+
+.npc-header h2 {
+  color: #135bcf;
+  margin: 0;
+}
+
+.copy-button {
+  padding: 0.5rem 1rem;
+  background-color: #4a5568;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.copy-button:hover {
+  background-color: #2d3748;
+  transform: translateY(-1px);
+}
+
+.copy-button.copied {
+  background-color: #48bb78;
+}
+
+.copy-button.copied:hover {
+  background-color: #38a169;
 }
 
 .npc-section {
@@ -153,5 +187,16 @@
 
   .npc-generator-container h1 {
     font-size: 2rem;
+  }
+
+  .npc-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .copy-button {
+    width: 100%;
+    justify-content: center;
   }
 } 
