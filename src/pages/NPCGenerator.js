@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HfInference } from '@huggingface/inference';
+import { db } from '../firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import './npcgenerator.css';
 
 function NPCGenerator() {
@@ -11,6 +13,7 @@ function NPCGenerator() {
   const [error, setError] = useState(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const [loadingTime, setLoadingTime] = useState(0);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     let interval;
@@ -166,6 +169,27 @@ Responda no seguinte formato JSON:
     }
   };
 
+  const handleSaveNPC = async () => {
+    if (!npc) return;
+
+    try {
+      const npcData = {
+        ...npc,
+        theme,
+        scenarioDescription,
+        desiredTraits,
+        createdAt: serverTimestamp(),
+      };
+
+      await addDoc(collection(db, 'npcs'), npcData);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2000);
+    } catch (err) {
+      console.error('Erro ao salvar NPC:', err);
+      setError('Erro ao salvar o NPC. Tente novamente.');
+    }
+  };
+
   return (
     <div className="npc-generator-container">
       <h1>Gerador de <span className="gradient-text">NPCs</span></h1>
@@ -243,12 +267,20 @@ Responda no seguinte formato JSON:
         <div className="npc-card">
           <div className="npc-header">
             <h2>{npc.name}</h2>
-            <button 
-              onClick={handleCopyNPC}
-              className={`copy-button ${copySuccess ? 'copied' : ''}`}
-            >
-              {copySuccess ? 'Copiado!' : 'Copiar NPC'}
-            </button>
+            <div className="npc-actions">
+              <button 
+                onClick={handleCopyNPC}
+                className={`action-button copy-button ${copySuccess ? 'copied' : ''}`}
+              >
+                {copySuccess ? 'Copiado!' : 'Copiar NPC'}
+              </button>
+              <button 
+                onClick={handleSaveNPC}
+                className={`action-button save-button ${saveSuccess ? 'saved' : ''}`}
+              >
+                {saveSuccess ? 'Salvo!' : 'Salvar NPC'}
+              </button>
+            </div>
           </div>
           
           <div className="npc-section">
