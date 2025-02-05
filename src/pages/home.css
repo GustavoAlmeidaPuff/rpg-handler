@@ -5,33 +5,26 @@
 }
 
 .main-title {
-  color: grey;
   text-align: center;
-  font-size: 2.5rem;
-  margin-bottom: 3rem;
-  font-weight: bold;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  color: #333;
 }
 
 .gradient-text {
-  background: linear-gradient(45deg, #8757f5, #57a05d, #5e90e0, #72d5e2, rgb(224, 62, 124));
+  background: linear-gradient(45deg, 
+    #57a05d,  /* Verde */
+    #5e90e0,  /* Azul */
+    #8757f5   /* Roxo */
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   display: inline-block;
   animation: gradient 5s ease infinite;
-  background-size: 300% 300%;
-}
-
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  background-size: 200% 200%;
+  font-weight: bold;
 }
 
 .products-section {
@@ -105,10 +98,72 @@
   }
 
   .main-title {
-    font-size: 2rem;
+    font-size: 2.2rem;
+    padding: 0 1rem;
   }
 
   .product-card {
     max-width: 100%;
+  }
+}
+
+.slogan {
+  text-align: center;
+  font-size: 1.6rem;
+  margin: 1.5rem 0 3.5rem;
+  color: #555;
+  font-family: 'MedievalSharp', cursive;
+  line-height: 1.4;
+}
+
+.highlight-text {
+  color: #135bcf;
+  font-weight: bold;
+  position: relative;
+  display: inline-block;
+  padding: 0 4px;
+}
+
+.highlight-text::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent,
+    #135bcf,
+    transparent
+  );
+  animation: shimmer 2s infinite;
+  border-radius: 2px;
+}
+
+.slogan-subtitle {
+  display: block;
+  font-size: 1.1rem;
+  color: #777;
+  margin-top: 0.7rem;
+  font-style: italic;
+  font-family: 'Arial', sans-serif;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (max-width: 768px) {
+  .slogan {
+    font-size: 1.3rem;
+    margin: 1rem 0 2.5rem;
+    padding: 0 1.5rem;
+  }
+
+  .slogan-subtitle {
+    font-size: 1rem;
+    margin-top: 0.5rem;
   }
 }

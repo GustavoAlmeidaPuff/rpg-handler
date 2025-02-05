@@ -9,6 +9,10 @@ function Home() {
   return (
     <div className="home-container">
       <h1 className="main-title">Bem vindo ao <span className="gradient-text">Mago da Ponte</span></h1>
+      <p className="slogan">
+        O site que ajuda você, <span className="highlight-text">mestre</span>!
+        <span className="slogan-subtitle">(ou jogador, quem sabe)</span>
+      </p>
       
       <section className="products-section">
         <Link to="/initiative" className="product-card-link">
