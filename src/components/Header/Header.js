@@ -27,6 +27,7 @@ function Header() {
           <Link to="/hp" className="nav-link">HP</Link>
           <Link to="/spells" className="nav-link">Magias</Link>
           <Link to="/creatures" className="nav-link">Criaturas</Link>
+          <Link to="/npc-generator" className="nav-link">Gerador de NPCs</Link>
         </nav>
 
         {/* Botão Hamburguer */}
@@ -48,6 +49,7 @@ function Header() {
             <Link to="/hp" className="nav-link" onClick={closeMenu}>HP</Link>
             <Link to="/spells" className="nav-link" onClick={closeMenu}>Magias</Link>
             <Link to="/creatures" className="nav-link" onClick={closeMenu}>Criaturas</Link>
+            <Link to="/npc-generator" className="nav-link" onClick={closeMenu}>Gerador de NPCs</Link>
           </nav>
         </div>
       </div>

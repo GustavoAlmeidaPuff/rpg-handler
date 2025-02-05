@@ -8,6 +8,7 @@ import Hp from './pages/HPmanager.js';
 import Spells from './pages/Spells';
 import SpellDetail from './pages/SpellDetail';
 import Creatures from './pages/Creatures.js';
+import NPCGenerator from './pages/NPCGenerator';
 import './App.css';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
             <Route path="/spells" element={<Spells />} />
             <Route path="/spells/:index" element={<SpellDetail />} />
             <Route path="/creatures" element={<Creatures />} />
+            <Route path="/npc-generator" element={<NPCGenerator />} />
           </Routes>
         </main>
         <Footer />
