@@ -59,7 +59,7 @@ function HPManager() {
   const handleHPChange = (characterName, value) => {
     setHpValues(prev => ({
       ...prev,
-      [characterName]: parseInt(value) || 1
+      [characterName]: parseInt(value) || 0
     }));
   };
 
@@ -76,7 +76,7 @@ function HPManager() {
     
     setHpValues(prev => ({
       ...prev,
-      [characterName]: Math.max(0, currentHP + (isAddition ? modification : -modification))
+      [characterName]: currentHP + (isAddition ? modification : -modification)
     }));
     
     setModifications(prev => ({
