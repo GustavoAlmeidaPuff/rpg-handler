@@ -82,7 +82,9 @@ function Initiative() {
         
         {!user && (
           <div className="guest-message">
-            Você está usando o modo offline. Para salvar seus dados permanentemente, faça login.
+            ⚠️ Você está no modo offline. Seus dados estão sendo salvos apenas no cache do navegador 
+            e podem ser perdidos se o cache for limpo. Para garantir que seus dados sejam salvos 
+            permanentemente, faça login.
           </div>
         )}
         

@@ -212,3 +212,23 @@
     border-color: #8757f5;
   }
 }
+
+.guest-message {
+  background: linear-gradient(135deg, #fff9f0, #fff4f4);
+  border: 1px solid #ffd699;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 15px 0;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.05);
+  color: #664400;
+  font-size: 0.95em;
+}
+
+.guest-message::before {
+  content: "⚠️";
+  font-size: 1em;
+  margin-right: 6px;
+  opacity: 0.9;
+}
