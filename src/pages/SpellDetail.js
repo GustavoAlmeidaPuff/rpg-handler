@@ -7,6 +7,7 @@ function SpellDetail() {
   const [spell, setSpell] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isTranslated, setIsTranslated] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
   const { index } = useParams();
   const { translateSpell, isTranslating } = useTranslation();
 
@@ -34,6 +35,40 @@ function SpellDetail() {
     setIsTranslated(true);
   };
 
+  const formatSpellDetails = (spell) => {
+    let details = [];
+
+    details.push(`${spell.name}`);
+    details.push(`Nível ${spell.level} - ${spell.school.name}\n`);
+
+    details.push(`Tempo de Conjuração: ${spell.casting_time}`);
+    details.push(`Alcance: ${spell.range}`);
+    details.push(`Componentes: ${spell.components.join(', ')}`);
+    details.push(`Duração: ${spell.duration}\n`);
+
+    details.push('Descrição:');
+    details.push(spell.desc.join('\n'));
+
+    if (spell.higher_level && spell.higher_level.length > 0) {
+      details.push('\nEm Níveis Superiores:');
+      details.push(spell.higher_level.join('\n'));
+    }
+
+    return details.join('\n');
+  };
+
+  const handleCopyClick = async () => {
+    if (spell) {
+      try {
+        await navigator.clipboard.writeText(formatSpellDetails(spell));
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000);
+      } catch (err) {
+        console.error('Erro ao copiar:', err);
+      }
+    }
+  };
+
   if (loading) {
     return <div className="loading">Carregando detalhes da magia...</div>;
   }
@@ -46,13 +81,21 @@ function SpellDetail() {
     <div className="spell-detail-container">
       <div className="spell-detail-header-actions">
         <Link to="/spells" className="back-button">← Voltar para lista</Link>
-        <button 
-          onClick={handleTranslate}
-          disabled={isTranslated || isTranslating}
-          className={`translate-button ${isTranslating ? 'translating' : ''}`}
-        >
-          {isTranslating ? 'Traduzindo...' : isTranslated ? 'Traduzido' : 'Traduzir para Português'}
-        </button>
+        <div className="spell-header-buttons">
+          <button 
+            onClick={handleCopyClick}
+            className={`copy-button ${copySuccess ? 'copied' : ''}`}
+          >
+            {copySuccess ? 'Copiado!' : 'Copiar Detalhes'}
+          </button>
+          <button 
+            onClick={handleTranslate}
+            disabled={isTranslated || isTranslating}
+            className={`translate-button ${isTranslating ? 'translating' : ''}`}
+          >
+            {isTranslating ? 'Traduzindo...' : isTranslated ? 'Traduzido' : 'Traduzir para Português'}
+          </button>
+        </div>
       </div>
       
       <div className="spell-detail-card">
