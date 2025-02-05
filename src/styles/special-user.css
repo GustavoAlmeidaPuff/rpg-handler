@@ -131,7 +131,6 @@
 .special-user .hp-manager-container h1::after,
 .special-user .initiative-container h1::after {
   position: absolute;
-  top: -15px;
   right: -25px;
   font-size: 1.2em;
 } 

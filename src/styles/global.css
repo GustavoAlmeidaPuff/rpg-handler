@@ -16,7 +16,7 @@
 
 /* Estilo especial para usuário especial */
 .special-user .gradient-text {
-  background: linear-gradient(45deg, #ff6b00, #42ff00, #0077ff, #5e00ff);
+  color: linear-gradient(45deg, #ff6b00, #42ff00, #0077ff, #5e00ff);
 }
 
 /* Estilo global para títulos de páginas */

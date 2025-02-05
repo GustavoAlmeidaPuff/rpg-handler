@@ -2,6 +2,7 @@
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
+  text-align: center;
 }
 
 .initiative-container {
@@ -19,6 +20,7 @@
   justify-content: center;
   align-items: center;
   gap: 0.2em;
+  width: 100%;
 }
 
 /* Gradiente padrão para todos os usuários */
@@ -35,6 +37,12 @@
 .special-user .initiative-container h1 {
   font-size: 3rem;
   margin-bottom: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
 }
 
 .special-user .initiative-container h1 .gradient-text {
@@ -43,6 +51,7 @@
   background-clip: text;
   color: transparent;
   display: inline-block;
+  font-size: 1.2em;
 }
 
 .initiative-form {
