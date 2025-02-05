@@ -1,18 +1,46 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { getInitiativeData, saveInitiativeData } from '../services/dataService';
 import './initiative.css';
 
 function Initiative() {
-  const [characters, setCharacters] = useState(() => {
-    // Carrega os dados do localStorage quando o componente é montado
-    const savedCharacters = localStorage.getItem('rpgInitiativeCharacters');
-    return savedCharacters ? JSON.parse(savedCharacters) : [];
-  });
+  const [characters, setCharacters] = useState([]);
   const [newCharacter, setNewCharacter] = useState({ name: '', initiative: '' });
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
-  // Atualiza o localStorage sempre que characters mudar
+  // Carrega os dados do Firestore quando o componente é montado
   useEffect(() => {
-    localStorage.setItem('rpgInitiativeCharacters', JSON.stringify(characters));
-  }, [characters]);
+    const loadData = async () => {
+      if (user) {
+        try {
+          const data = await getInitiativeData(user.uid);
+          setCharacters(data);
+        } catch (error) {
+          console.error('Erro ao carregar dados de iniciativa:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadData();
+  }, [user]);
+
+  // Salva no Firestore sempre que characters mudar
+  useEffect(() => {
+    const saveData = async () => {
+      if (user && !isLoading) {
+        try {
+          await saveInitiativeData(user.uid, characters);
+        } catch (error) {
+          console.error('Erro ao salvar dados de iniciativa:', error);
+        }
+      }
+    };
+
+    saveData();
+  }, [characters, user, isLoading]);
 
   const handleAddCharacter = (e) => {
     e.preventDefault();
@@ -38,6 +66,26 @@ function Initiative() {
     updatedCharacters[index].initiative = parseInt(newValue) || 0;
     setCharacters(updatedCharacters.sort((a, b) => b.initiative - a.initiative));
   };
+
+  if (!user) {
+    return (
+      <div className="initiative-container">
+        <div className="initiative-message">
+          Você precisa fazer login para usar o gerenciador de iniciativa.
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="initiative-container">
+        <div className="initiative-message">
+          Carregando...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="initiative-main-content">

@@ -1,38 +1,61 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { getHPData, saveHPData, getInitiativeData } from '../services/dataService';
 import './hpmanager.css';
 
 function HPManager() {
   const [characters, setCharacters] = useState([]);
-  const [hpValues, setHpValues] = useState(() => {
-    // Carrega os valores de HP do localStorage quando o componente é montado
-    const savedHP = localStorage.getItem('rpgCharactersHP');
-    return savedHP ? JSON.parse(savedHP) : {};
-  });
+  const [hpValues, setHpValues] = useState({});
   const [modifications, setModifications] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
-    // Carrega a lista de personagens do localStorage
-    const savedCharacters = localStorage.getItem('rpgInitiativeCharacters');
-    if (savedCharacters) {
-      const parsedCharacters = JSON.parse(savedCharacters);
-      setCharacters(parsedCharacters);
+    const loadData = async () => {
+      if (user) {
+        try {
+          // Carrega a lista de personagens e seus HPs
+          const [charactersData, hpData] = await Promise.all([
+            getInitiativeData(user.uid),
+            getHPData(user.uid)
+          ]);
 
-      // Garante que todos os personagens tenham um valor de HP
-      const updatedHP = { ...hpValues };
-      parsedCharacters.forEach(char => {
-        if (!updatedHP[char.name]) {
-          updatedHP[char.name] = 1;
+          setCharacters(charactersData);
+          
+          // Garante que todos os personagens tenham um valor de HP
+          const updatedHP = { ...hpData };
+          charactersData.forEach(char => {
+            if (!updatedHP[char.name]) {
+              updatedHP[char.name] = 1;
+            }
+          });
+          
+          setHpValues(updatedHP);
+        } catch (error) {
+          console.error('Erro ao carregar dados:', error);
+        } finally {
+          setIsLoading(false);
         }
-      });
-      
-      setHpValues(updatedHP);
-    }
-  }, []);
+      }
+    };
 
-  // Salva os valores de HP no localStorage sempre que são atualizados
+    loadData();
+  }, [user]);
+
+  // Salva os valores de HP no Firestore sempre que são atualizados
   useEffect(() => {
-    localStorage.setItem('rpgCharactersHP', JSON.stringify(hpValues));
-  }, [hpValues]);
+    const saveHP = async () => {
+      if (user && !isLoading) {
+        try {
+          await saveHPData(user.uid, hpValues);
+        } catch (error) {
+          console.error('Erro ao salvar valores de HP:', error);
+        }
+      }
+    };
+
+    saveHP();
+  }, [hpValues, user, isLoading]);
 
   const handleHPChange = (characterName, value) => {
     setHpValues(prev => ({
@@ -44,29 +67,44 @@ function HPManager() {
   const handleModification = (characterName, value) => {
     setModifications(prev => ({
       ...prev,
-      [characterName]: value
+      [characterName]: parseInt(value) || 0
     }));
   };
 
-  const applyModification = (characterName, operation) => {
+  const applyModification = (characterName) => {
     const currentHP = hpValues[characterName] || 0;
-    const modValue = parseInt(modifications[characterName]) || 0;
-
-    const newHP = operation === 'add' 
-      ? currentHP + modValue 
-      : currentHP - modValue;
-
+    const modification = modifications[characterName] || 0;
+    
     setHpValues(prev => ({
       ...prev,
-      [characterName]: newHP
+      [characterName]: Math.max(0, currentHP + modification)
     }));
-
-    // Limpa o campo de modificação após aplicar
+    
     setModifications(prev => ({
       ...prev,
-      [characterName]: ''
+      [characterName]: 0
     }));
   };
+
+  if (!user) {
+    return (
+      <div className="hp-manager-container">
+        <div className="hp-message">
+          Você precisa fazer login para usar o gerenciador de HP.
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="hp-manager-container">
+        <div className="hp-message">
+          Carregando...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="hp-manager-container">
@@ -108,13 +146,13 @@ function HPManager() {
                     className="modification-input"
                   />
                   <button 
-                    onClick={() => applyModification(char.name, 'subtract')}
+                    onClick={() => applyModification(char.name)}
                     className="subtract-button"
                   >
                     -
                   </button>
                   <button 
-                    onClick={() => applyModification(char.name, 'add')}
+                    onClick={() => applyModification(char.name)}
                     className="add-button"
                   >
                     +
