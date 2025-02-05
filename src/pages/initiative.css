@@ -181,19 +181,16 @@
 
   .initiative-container {
     padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
 
   .initiative-form {
+    align-items: stretch;
     flex-direction: column;
     gap: 15px;
     width: 100%;
   }
 
   .initiative-form input {
-    width: 100%;
     max-width: 100%;
   }
 
@@ -205,20 +202,41 @@
   .character-item {
     padding: 15px;
     gap: 10px;
-    justify-content: center;
-    text-align: center;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas: 
+      "number name"
+      "condition condition"
+      "remove remove";
+    align-items: center;
   }
 
   .initiative-number {
+    grid-area: number;
     font-size: 18px;
     min-width: 35px;
+    margin-right: 10px;
   }
 
   .character-name {
+    grid-area: name;
+    margin: 0;
+    text-align: left;
+  }
+
+  .condition-select {
+    grid-area: condition;
     width: 100%;
-    order: -1;
-    margin-bottom: 5px;
-    text-align: center;
+    margin: 8px 0;
+  }
+
+  .remove-button {
+    grid-area: remove;
+    width: 100%;
+  }
+
+  .condition-badge {
+    margin: 4px 8px;
   }
 
   .initiative-container h1 {
@@ -227,12 +245,6 @@
 
   .initiative-container h1 .gradient-text {
     font-size: 1.1em;
-  }
-
-  h1 {
-    font-size: 24px;
-    text-align: center;
-    margin-bottom: 20px;
   }
 
   .initiative-list {
