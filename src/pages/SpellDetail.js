@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import useTranslation from '../hooks/useTranslation';
 import './spellDetail.css';
 
 function SpellDetail() {
   const [spell, setSpell] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isTranslated, setIsTranslated] = useState(false);
   const { index } = useParams();
+  const { translateSpell, isTranslating } = useTranslation();
 
   useEffect(() => {
     const fetchSpellDetail = async () => {
@@ -23,6 +26,14 @@ function SpellDetail() {
     fetchSpellDetail();
   }, [index]);
 
+  const handleTranslate = async () => {
+    if (!spell || isTranslated) return;
+    
+    const translatedSpell = await translateSpell(spell);
+    setSpell(translatedSpell);
+    setIsTranslated(true);
+  };
+
   if (loading) {
     return <div className="loading">Carregando detalhes da magia...</div>;
   }
@@ -33,7 +44,16 @@ function SpellDetail() {
 
   return (
     <div className="spell-detail-container">
-      <Link to="/spells" className="back-button">← Voltar para lista</Link>
+      <div className="spell-detail-header-actions">
+        <Link to="/spells" className="back-button">← Voltar para lista</Link>
+        <button 
+          onClick={handleTranslate}
+          disabled={isTranslated || isTranslating}
+          className={`translate-button ${isTranslating ? 'translating' : ''}`}
+        >
+          {isTranslating ? 'Traduzindo...' : isTranslated ? 'Traduzido' : 'Traduzir para Português'}
+        </button>
+      </div>
       
       <div className="spell-detail-card">
         <header className="spell-detail-header">
