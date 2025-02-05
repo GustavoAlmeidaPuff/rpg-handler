@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './home.css';
 import initiativeImage from '../assets/initiative-preview.png';
 import hpImage from '../assets/hp-preview.png';
+import spellsImage from '../assets/spells-preview.png';
 
 function Home() {
   return (
@@ -27,6 +28,16 @@ function Home() {
             </div>
             <h2>Gerenciador de Vida</h2>
             <p>Controle os pontos de vida dos personagens</p>
+          </div>
+        </Link>
+
+        <Link to="/spells" className="product-card-link">
+          <div className="product-card">
+            <div className="card-image">
+              <img src={spellsImage} alt="Preview da lista de magias" />
+            </div>
+            <h2>Lista de Magias</h2>
+            <p>Consulte todas as magias do D&D 5e</p>
           </div>
         </Link>
       </section>
