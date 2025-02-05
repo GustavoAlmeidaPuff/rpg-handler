@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import AccountMenu from '../AccountMenu/AccountMenu';
 import logo from '../../logo.png';
@@ -8,6 +8,7 @@ import './Header.css';
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useAuth();
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -26,11 +27,11 @@ function Header() {
 
         {/* Menu Desktop */}
         <nav className="nav-menu desktop">
-          <Link to="/initiative" className="nav-link">Iniciativa</Link>
-          <Link to="/hp" className="nav-link">HP</Link>
-          <Link to="/spells" className="nav-link">Magias</Link>
-          <Link to="/creatures" className="nav-link">Criaturas</Link>
-          <Link to="/npc-generator" className="nav-link">Gerador de NPCs</Link>
+          <Link to="/initiative" className={`nav-link ${location.pathname === '/initiative' ? 'active' : ''}`}>Iniciativa</Link>
+          <Link to="/hp" className={`nav-link ${location.pathname === '/hp' ? 'active' : ''}`}>HP</Link>
+          <Link to="/spells" className={`nav-link ${location.pathname === '/spells' ? 'active' : ''}`}>Magias</Link>
+          <Link to="/creatures" className={`nav-link ${location.pathname === '/creatures' ? 'active' : ''}`}>Criaturas</Link>
+          <Link to="/npc-generator" className={`nav-link ${location.pathname === '/npc-generator' ? 'active' : ''}`}>Gerador de NPCs</Link>
           {user ? (
             <AccountMenu />
           ) : (
@@ -61,12 +62,12 @@ function Header() {
         {/* Menu Mobile */}
         <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
           <nav className="nav-menu mobile">
-            <Link to="/" className="nav-link" onClick={closeMenu}>Início</Link>
-            <Link to="/initiative" className="nav-link" onClick={closeMenu}>Iniciativa</Link>
-            <Link to="/hp" className="nav-link" onClick={closeMenu}>HP</Link>
-            <Link to="/spells" className="nav-link" onClick={closeMenu}>Magias</Link>
-            <Link to="/creatures" className="nav-link" onClick={closeMenu}>Criaturas</Link>
-            <Link to="/npc-generator" className="nav-link" onClick={closeMenu}>Gerador de NPCs</Link>
+            <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`} onClick={closeMenu}>Início</Link>
+            <Link to="/initiative" className={`nav-link ${location.pathname === '/initiative' ? 'active' : ''}`} onClick={closeMenu}>Iniciativa</Link>
+            <Link to="/hp" className={`nav-link ${location.pathname === '/hp' ? 'active' : ''}`} onClick={closeMenu}>HP</Link>
+            <Link to="/spells" className={`nav-link ${location.pathname === '/spells' ? 'active' : ''}`} onClick={closeMenu}>Magias</Link>
+            <Link to="/creatures" className={`nav-link ${location.pathname === '/creatures' ? 'active' : ''}`} onClick={closeMenu}>Criaturas</Link>
+            <Link to="/npc-generator" className={`nav-link ${location.pathname === '/npc-generator' ? 'active' : ''}`} onClick={closeMenu}>Gerador de NPCs</Link>
           </nav>
         </div>
       </div>
