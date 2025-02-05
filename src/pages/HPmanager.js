@@ -70,13 +70,13 @@ function HPManager() {
     }));
   };
 
-  const applyModification = (characterName) => {
+  const applyModification = (characterName, isAddition = true) => {
     const currentHP = hpValues[characterName] || 0;
     const modification = modifications[characterName] || 0;
     
     setHpValues(prev => ({
       ...prev,
-      [characterName]: Math.max(0, currentHP + modification)
+      [characterName]: Math.max(0, currentHP + (isAddition ? modification : -modification))
     }));
     
     setModifications(prev => ({
@@ -146,13 +146,13 @@ function HPManager() {
                     className="modification-input"
                   />
                   <button 
-                    onClick={() => applyModification(char.name)}
+                    onClick={() => applyModification(char.name, false)}
                     className="subtract-button"
                   >
                     -
                   </button>
                   <button 
-                    onClick={() => applyModification(char.name)}
+                    onClick={() => applyModification(char.name, true)}
                     className="add-button"
                   >
                     +
