@@ -1,0 +1,79 @@
+.spell-detail-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.back-button {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #135bcf;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.back-button:hover {
+  color: #0f4aa8;
+}
+
+.spell-detail-card {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.spell-detail-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+}
+
+.spell-detail-header h1 {
+  margin: 0 0 1rem 0;
+  color: #135bcf;
+}
+
+.spell-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.spell-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.spell-casting-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.spell-casting-info p {
+  margin: 0;
+}
+
+.spell-description h2,
+.higher-level h2 {
+  color: #135bcf;
+  margin-bottom: 1rem;
+}
+
+.spell-description p,
+.higher-level p {
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+@media (max-width: 768px) {
+  .spell-detail-card {
+    padding: 1rem;
+  }
+} 
