@@ -14,6 +14,7 @@ const Creatures = () => {
   const ITEMS_PER_PAGE = 20;
   const [isTranslated, setIsTranslated] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const [filters, setFilters] = useState({
     name: '',
@@ -211,6 +212,71 @@ const Creatures = () => {
     }
   };
 
+  const formatCreatureDetails = (creature) => {
+    let details = [];
+
+    details.push(`${creature.name}`);
+    details.push(`${creature.size} ${creature.type}, ${creature.alignment}\n`);
+    
+    details.push(`Armor Class: ${creature.armor_class[0].value}`);
+    details.push(`Hit Points: ${creature.hit_points} (${creature.hit_points_roll})`);
+    details.push(`Speed: ${Object.entries(creature.speed).map(([key, value]) => `${key} ${value}`).join(', ')}\n`);
+    
+    details.push('Atributos:');
+    details.push(`STR: ${creature.strength} (${Math.floor((creature.strength - 10) / 2)})`);
+    details.push(`DEX: ${creature.dexterity} (${Math.floor((creature.dexterity - 10) / 2)})`);
+    details.push(`CON: ${creature.constitution} (${Math.floor((creature.constitution - 10) / 2)})`);
+    details.push(`INT: ${creature.intelligence} (${Math.floor((creature.intelligence - 10) / 2)})`);
+    details.push(`WIS: ${creature.wisdom} (${Math.floor((creature.wisdom - 10) / 2)})`);
+    details.push(`CHA: ${creature.charisma} (${Math.floor((creature.charisma - 10) / 2)})\n`);
+
+    if (creature.proficiencies.length > 0) {
+      details.push('Proficiências:');
+      creature.proficiencies.forEach(prof => {
+        details.push(`${prof.proficiency.name}: +${prof.value}`);
+      });
+      details.push('');
+    }
+
+    if (creature.special_abilities?.length > 0) {
+      details.push('Habilidades Especiais:');
+      creature.special_abilities.forEach(ability => {
+        details.push(`${ability.name}: ${ability.desc}`);
+      });
+      details.push('');
+    }
+
+    if (creature.actions?.length > 0) {
+      details.push('Ações:');
+      creature.actions.forEach(action => {
+        details.push(`${action.name}: ${action.desc}`);
+      });
+      details.push('');
+    }
+
+    if (creature.legendary_actions?.length > 0) {
+      details.push('Ações Lendárias:');
+      creature.legendary_actions.forEach(action => {
+        details.push(`${action.name}: ${action.desc}`);
+      });
+      details.push('');
+    }
+
+    return details.join('\n');
+  };
+
+  const handleCopyClick = async () => {
+    if (selectedCreature) {
+      try {
+        await navigator.clipboard.writeText(formatCreatureDetails(selectedCreature));
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000); // Reset após 2 segundos
+      } catch (err) {
+        console.error('Erro ao copiar:', err);
+      }
+    }
+  };
+
   return (
     <div className="creatures-container">
       <div className="filters-section">
@@ -304,13 +370,21 @@ const Creatures = () => {
           <div className="creature-details">
             <div className="creature-header">
               <h2>{selectedCreature.name}</h2>
-              <button 
-                onClick={handleTranslateClick}
-                className={`translate-button ${isTranslated ? 'translated' : ''} ${isTranslating ? 'translating' : ''}`}
-                disabled={isTranslated || isTranslating}
-              >
-                {isTranslating ? 'Traduzindo...' : isTranslated ? 'Traduzido' : 'Traduzir para Português'}
-              </button>
+              <div className="creature-header-buttons">
+                <button 
+                  onClick={handleCopyClick}
+                  className={`copy-button ${copySuccess ? 'copied' : ''}`}
+                >
+                  {copySuccess ? 'Copiado!' : 'Copiar Detalhes'}
+                </button>
+                <button 
+                  onClick={handleTranslateClick}
+                  className={`translate-button ${isTranslated ? 'translated' : ''} ${isTranslating ? 'translating' : ''}`}
+                  disabled={isTranslated || isTranslating}
+                >
+                  {isTranslating ? 'Traduzindo...' : isTranslated ? 'Traduzido' : 'Traduzir para Português'}
+                </button>
+              </div>
             </div>
             <p className="creature-type">{selectedCreature.size} {selectedCreature.type}, {selectedCreature.alignment}</p>
             

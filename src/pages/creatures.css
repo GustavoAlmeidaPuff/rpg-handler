@@ -516,4 +516,43 @@
   .translate-button.translating {
     padding-right: 3rem;
   }
+}
+
+.creature-header-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.copy-button {
+  padding: 0.5rem 1rem;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.copy-button:hover {
+  background-color: #5a6268;
+}
+
+.copy-button.copied {
+  background-color: #28a745;
+}
+
+/* Ajuste para mobile */
+@media (max-width: 768px) {
+  .creature-header-buttons {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .copy-button {
+    width: 100%;
+    padding: 0.75rem;
+  }
 } 
