@@ -259,16 +259,164 @@
 
 @media (max-width: 768px) {
   .creatures-container {
+    padding: 0.5rem;
+  }
+
+  .filters-section {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .number-filters > div {
+    width: 100%;
+  }
+
+  .number-filters input {
+    flex: 1;
+  }
+
+  .content-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .creatures-list {
+    height: auto;
+    max-height: 300px;
+    padding-right: 0;
+  }
+
+  .creature-card {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .creature-basic-info {
+    grid-template-columns: repeat(2, 1fr);
+    font-size: 0.85rem;
+  }
+
+  .creature-details {
+    height: auto;
+    max-height: calc(100vh - 400px);
     padding: 1rem;
   }
 
   .ability-scores {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    padding: 0.75rem;
+    font-size: 0.9rem;
   }
 
-  .creature-basic-info {
+  .basic-stats,
+  .proficiencies,
+  .special-abilities,
+  .actions,
+  .legendary-actions,
+  .spells {
+    padding: 0.75rem;
+  }
+
+  .basic-stats p {
+    margin: 0.25rem 0;
+  }
+
+  .ability,
+  .action,
+  .legendary-action {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .spell-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  /* Ajustes para telas muito pequenas */
+  @media (max-width: 480px) {
+    .creature-basic-info {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+
+    .ability-scores {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filters-section input,
+    .filters-section select {
+      font-size: 0.9rem;
+      padding: 0.5rem;
+    }
+
+    .creature-details h2 {
+      font-size: 1.5rem;
+    }
+
+    .creature-type {
+      font-size: 0.9rem;
+    }
+
+    .proficiencies h3,
+    .special-abilities h3,
+    .actions h3,
+    .legendary-actions h3,
+    .spells h3 {
+      font-size: 1.1rem;
+    }
+  }
+
+  /* Ajuste para orientação paisagem em celulares */
+  @media (max-height: 600px) {
+    .creatures-list {
+      max-height: 200px;
+    }
+
+    .creature-details {
+      max-height: calc(100vh - 300px);
+    }
+  }
+}
+
+/* Ajuste para telas médias (tablets) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .creatures-container {
+    padding: 1rem;
+  }
+
+  .content-section {
     grid-template-columns: 1fr;
+  }
+
+  .creatures-list {
+    max-height: 400px;
+  }
+
+  .creature-details {
+    max-height: calc(100vh - 500px);
+  }
+}
+
+/* Ajuste para o container principal em telas pequenas */
+@media (max-width: 1024px) {
+  .creatures-container {
+    max-width: 100%;
+  }
+
+  .filters-section {
+    flex-direction: column;
+  }
+
+  .filters-section input,
+  .filters-section select {
+    width: 100%;
+    margin: 0.25rem 0;
+  }
+
+  .number-filters {
+    width: 100%;
   }
 }
 
@@ -285,4 +433,87 @@
 .loading-message p {
   margin: 0;
   font-size: 1.1rem;
+}
+
+.creature-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.creature-header h2 {
+  margin: 0;
+}
+
+.translate-button {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.translate-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.translate-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.translate-button.translated {
+  background-color: #28a745;
+}
+
+.translate-button.translating {
+  background-color: #ffc107;
+  cursor: wait;
+  position: relative;
+  padding-right: 2.5rem;
+}
+
+.translate-button.translating::after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}
+
+/* Ajuste para mobile */
+@media (max-width: 768px) {
+  .creature-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .translate-button {
+    width: 100%;
+    padding: 0.75rem;
+  }
+
+  .translate-button.translating {
+    padding-right: 3rem;
+  }
 } 

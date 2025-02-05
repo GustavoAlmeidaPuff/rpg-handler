@@ -12,6 +12,8 @@ const Creatures = () => {
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
   const ITEMS_PER_PAGE = 20;
+  const [isTranslated, setIsTranslated] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
 
   const [filters, setFilters] = useState({
     name: '',
@@ -117,9 +119,97 @@ const Creatures = () => {
 
   const handleCreatureClick = async (creature) => {
     setSelectedCreature(creature);
+    setIsTranslated(false);
+    setIsTranslating(false);
   };
 
   const creatureTypes = [...new Set(filteredCreatures.map(creature => creature.type))];
+
+  const translateText = async (text) => {
+    try {
+      const response = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=' + encodeURI(text));
+      const data = await response.json();
+      return data[0][0][0];
+    } catch (error) {
+      console.error('Erro na tradução:', error);
+      return text;
+    }
+  };
+
+  const translateCreatureDetails = async (creature) => {
+    if (!creature) return null;
+
+    try {
+      const translatedDetails = {
+        ...creature,
+        alignment: await translateText(creature.alignment),
+        size: await translateText(creature.size),
+        type: await translateText(creature.type),
+      };
+
+      if (creature.special_abilities) {
+        translatedDetails.special_abilities = await Promise.all(
+          creature.special_abilities.map(async (ability) => ({
+            ...ability,
+            name: await translateText(ability.name),
+            desc: await translateText(ability.desc),
+          }))
+        );
+      }
+
+      if (creature.actions) {
+        translatedDetails.actions = await Promise.all(
+          creature.actions.map(async (action) => ({
+            ...action,
+            name: await translateText(action.name),
+            desc: await translateText(action.desc),
+          }))
+        );
+      }
+
+      if (creature.legendary_actions) {
+        translatedDetails.legendary_actions = await Promise.all(
+          creature.legendary_actions.map(async (action) => ({
+            ...action,
+            name: await translateText(action.name),
+            desc: await translateText(action.desc),
+          }))
+        );
+      }
+
+      if (creature.proficiencies) {
+        translatedDetails.proficiencies = await Promise.all(
+          creature.proficiencies.map(async (prof) => ({
+            ...prof,
+            proficiency: {
+              ...prof.proficiency,
+              name: await translateText(prof.proficiency.name),
+            },
+          }))
+        );
+      }
+
+      return translatedDetails;
+    } catch (error) {
+      console.error('Erro ao traduzir detalhes:', error);
+      return creature;
+    }
+  };
+
+  const handleTranslateClick = async () => {
+    if (!isTranslated && selectedCreature && !isTranslating) {
+      setIsTranslating(true);
+      try {
+        const translatedCreature = await translateCreatureDetails(selectedCreature);
+        setSelectedCreature(translatedCreature);
+        setIsTranslated(true);
+      } catch (error) {
+        console.error('Erro ao traduzir:', error);
+      } finally {
+        setIsTranslating(false);
+      }
+    }
+  };
 
   return (
     <div className="creatures-container">
@@ -212,7 +302,16 @@ const Creatures = () => {
 
         {selectedCreature && (
           <div className="creature-details">
-            <h2>{selectedCreature.name}</h2>
+            <div className="creature-header">
+              <h2>{selectedCreature.name}</h2>
+              <button 
+                onClick={handleTranslateClick}
+                className={`translate-button ${isTranslated ? 'translated' : ''} ${isTranslating ? 'translating' : ''}`}
+                disabled={isTranslated || isTranslating}
+              >
+                {isTranslating ? 'Traduzindo...' : isTranslated ? 'Traduzido' : 'Traduzir para Português'}
+              </button>
+            </div>
             <p className="creature-type">{selectedCreature.size} {selectedCreature.type}, {selectedCreature.alignment}</p>
             
             <div className="stat-block">
