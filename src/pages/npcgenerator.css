@@ -8,6 +8,7 @@
   text-align: center;
   margin-bottom: 2rem;
   font-size: 2.5rem;
+  word-wrap: break-word;
 }
 
 .gradient-text {
@@ -32,10 +33,14 @@
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group {
   margin-bottom: 1.5rem;
+  width: 100%;
 }
 
 .form-group label {
@@ -43,6 +48,7 @@
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: #333;
+  font-size: 1rem;
 }
 
 .form-group select,
@@ -53,11 +59,13 @@
   border-radius: 4px;
   font-size: 1rem;
   background-color: white;
+  box-sizing: border-box;
 }
 
 .form-group textarea {
   resize: vertical;
   min-height: 100px;
+  font-family: inherit;
 }
 
 .generate-button {
@@ -92,6 +100,8 @@
   font-size: 0.9rem;
   text-align: center;
   animation: fadeIn 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .npc-card {
@@ -100,6 +110,8 @@
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.5s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @keyframes fadeIn {
@@ -114,11 +126,17 @@
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid #eee;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .npc-header h2 {
   color: #135bcf;
   margin: 0;
+  font-size: 1.5rem;
+  word-wrap: break-word;
+  flex: 1;
+  min-width: 200px;
 }
 
 .copy-button {
@@ -130,14 +148,11 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  white-space: nowrap;
 }
 
 .copy-button:hover {
   background-color: #2d3748;
-  transform: translateY(-1px);
 }
 
 .copy-button.copied {
@@ -154,6 +169,7 @@
   background: #f8f9fa;
   border-radius: 4px;
   border: 1px solid #eee;
+  word-wrap: break-word;
 }
 
 .npc-section:last-child {
@@ -170,6 +186,7 @@
   color: #666;
   line-height: 1.6;
   margin: 0;
+  font-size: 0.95rem;
 }
 
 @media (max-width: 768px) {
@@ -177,27 +194,106 @@
     padding: 1rem;
   }
 
+  .npc-generator-container h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
   .generator-form {
     padding: 1rem;
+  }
+
+  .form-group label {
+    font-size: 0.95rem;
+  }
+
+  .form-group select,
+  .form-group textarea {
+    font-size: 0.95rem;
+    padding: 0.7rem;
+  }
+
+  .generate-button {
+    font-size: 1rem;
+    padding: 0.8rem;
+  }
+
+  .loading-container {
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+
+  .loading-text {
+    font-size: 1rem;
+  }
+
+  .loading-flavor-text {
+    font-size: 0.85rem;
   }
 
   .npc-card {
     padding: 1rem;
   }
 
-  .npc-generator-container h1 {
-    font-size: 2rem;
-  }
-
   .npc-header {
     flex-direction: column;
-    gap: 1rem;
+    align-items: stretch;
     text-align: center;
+  }
+
+  .npc-header h2 {
+    font-size: 1.3rem;
+    text-align: center;
+    min-width: unset;
   }
 
   .copy-button {
     width: 100%;
     justify-content: center;
+    padding: 0.8rem;
+  }
+
+  .npc-section {
+    padding: 0.8rem;
+  }
+
+  .npc-section h3 {
+    font-size: 1rem;
+  }
+
+  .npc-section p {
+    font-size: 0.9rem;
+  }
+
+  .dice-container {
+    width: 50px;
+    height: 50px;
+  }
+
+  .dice::before {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .npc-generator-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .generator-form {
+    padding: 0.8rem;
+  }
+
+  .form-group textarea {
+    min-height: 80px;
+  }
+
+  .loading-text {
+    font-size: 0.9rem;
+  }
+
+  .npc-section {
+    padding: 0.6rem;
   }
 }
 
@@ -209,6 +305,8 @@
   border-radius: 8px;
   border: 2px dashed #8757f5;
   animation: pulse 2s infinite ease-in-out;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .loading-animation {
@@ -246,7 +344,7 @@
 }
 
 .loading-text {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #333;
   margin: 1rem 0;
   font-weight: 500;
@@ -256,37 +354,26 @@
   color: #666;
   font-style: italic;
   animation: fadeInOut 1s infinite alternate;
+  font-size: 0.9rem;
 }
 
 @keyframes roll {
-  0% {
-    transform: rotateX(0) rotateY(0) rotateZ(0);
-  }
-  100% {
-    transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
-  }
+  0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+  100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
 }
 
 @keyframes pulse {
-  0% {
-    transform: scale(1);
-    border-color: #8757f5;
-  }
-  50% {
-    transform: scale(1.02);
-    border-color: #5e90e0;
-  }
-  100% {
-    transform: scale(1);
-    border-color: #8757f5;
-  }
+  0% { transform: scale(1); border-color: #8757f5; }
+  50% { transform: scale(1.02); border-color: #5e90e0; }
+  100% { transform: scale(1); border-color: #8757f5; }
 }
 
 @keyframes fadeInOut {
-  from {
-    opacity: 0.6;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 } 
