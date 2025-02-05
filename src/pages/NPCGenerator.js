@@ -73,8 +73,28 @@ ${npc.quirks}`;
     }
   };
 
+  const generateRandomSeed = () => {
+    return Math.floor(Math.random() * 1000000);
+  };
+
   const generatePrompt = (theme, description) => {
-    return `Gere um NPC detalhado para um cenário de RPG com tema ${theme}${description ? ` no seguinte contexto: ${description}` : ''}.
+    const randomTraits = [
+      'ambicioso', 'cauteloso', 'corajoso', 'criativo', 'curioso',
+      'determinado', 'divertido', 'empático', 'energético', 'focado',
+      'gentil', 'honesto', 'humilde', 'idealista', 'inteligente',
+      'leal', 'metódico', 'otimista', 'paciente', 'pragmático'
+    ];
+
+    const randomTrait = randomTraits[Math.floor(Math.random() * randomTraits.length)];
+    const randomAge = Math.floor(Math.random() * 50) + 20; // idade entre 20 e 70
+    const randomSeed = generateRandomSeed();
+
+    return `Gere um NPC único e detalhado para um cenário de RPG com tema ${theme}${description ? ` no seguinte contexto: ${description}` : ''}.
+
+Para garantir originalidade, use estas características como inspiração (mas não necessariamente siga todas):
+- Tendência para ser ${randomTrait}
+- Aproximadamente ${randomAge} anos de idade
+- Seed de aleatoriedade: ${randomSeed}
 
 O NPC deve ter as seguintes informações:
 1. Nome completo e/ou apelido apropriado para o cenário
@@ -84,6 +104,8 @@ O NPC deve ter as seguintes informações:
 5. Características principais e habilidades
 6. Sugestão de atributos (força, destreza, etc) baseado na descrição
 7. Peculiaridades ou maneirismos únicos
+
+Seja criativo e evite padrões óbvios. Crie um personagem memorável e único.
 
 Responda no seguinte formato JSON:
 {
@@ -100,7 +122,7 @@ Responda no seguinte formato JSON:
   const handleGenerateNPC = async () => {
     setIsLoading(true);
     setError(null);
-    setNpc(null); // Limpa o NPC anterior
+    setNpc(null);
 
     try {
       const hf = new HfInference(process.env.REACT_APP_HUGGINGFACE_TOKEN);
@@ -111,14 +133,16 @@ Responda no seguinte formato JSON:
         inputs: prompt,
         parameters: {
           max_new_tokens: 1024,
-          temperature: 0.7,
+          temperature: 0.9, // Aumentado para mais variação
           top_p: 0.95,
+          top_k: 50,
+          repetition_penalty: 1.2, // Adicionado para evitar repetições
           return_full_text: false,
+          seed: generateRandomSeed(), // Seed aleatória a cada geração
         },
       });
 
       try {
-        // Encontra o primeiro objeto JSON válido na resposta
         const jsonStr = response.generated_text.match(/\{[\s\S]*\}/)[0];
         const generatedNPC = JSON.parse(jsonStr);
         setNpc(generatedNPC);
