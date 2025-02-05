@@ -4,6 +4,7 @@ import './home.css';
 import initiativeImage from '../assets/initiative-preview.png';
 import hpImage from '../assets/hp-preview.png';
 import spellsImage from '../assets/spells-preview.png';
+import creaturesImage from '../assets/creatures-preview.png';
 
 function Home() {
   return (
@@ -42,6 +43,16 @@ function Home() {
             </div>
             <h2>Lista de Magias</h2>
             <p>Consulte todas as magias do D&D 5e</p>
+          </div>
+        </Link>
+
+        <Link to="/creatures" className="product-card-link">
+          <div className="product-card">
+            <div className="card-image">
+              <img src={creaturesImage} alt="Preview da lista de criaturas" />
+            </div>
+            <h2>Lista de Criaturas</h2>
+            <p>Consulte todas as criaturas do D&D 5e</p>
           </div>
         </Link>
       </section>
