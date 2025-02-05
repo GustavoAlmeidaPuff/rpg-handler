@@ -5,6 +5,7 @@ import './npcgenerator.css';
 function NPCGenerator() {
   const [theme, setTheme] = useState('');
   const [scenarioDescription, setScenarioDescription] = useState('');
+  const [desiredTraits, setDesiredTraits] = useState('');
   const [npc, setNpc] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -77,7 +78,7 @@ ${npc.quirks}`;
     return Math.floor(Math.random() * 1000000);
   };
 
-  const generatePrompt = (theme, description) => {
+  const generatePrompt = (theme, description, traits) => {
     const randomTraits = [
       'ambicioso', 'cauteloso', 'corajoso', 'criativo', 'curioso',
       'determinado', 'divertido', 'empático', 'energético', 'focado',
@@ -86,12 +87,16 @@ ${npc.quirks}`;
     ];
 
     const randomTrait = randomTraits[Math.floor(Math.random() * randomTraits.length)];
-    const randomAge = Math.floor(Math.random() * 50) + 20; // idade entre 20 e 70
+    const randomAge = Math.floor(Math.random() * 50) + 20;
     const randomSeed = generateRandomSeed();
 
-    return `Gere um NPC único e detalhado para um cenário de RPG com tema ${theme}${description ? ` no seguinte contexto: ${description}` : ''}.
+    let prompt = `Gere um NPC único e detalhado para um cenário de RPG com tema ${theme}${description ? ` no seguinte contexto: ${description}` : ''}.`;
 
-Para garantir originalidade, use estas características como inspiração (mas não necessariamente siga todas):
+    if (traits) {
+      prompt += `\n\nO NPC DEVE ter as seguintes características específicas:\n${traits}`;
+    }
+
+    prompt += `\n\nPara adicionar mais originalidade, considere também estas características como inspiração (mas não necessariamente siga todas):
 - Tendência para ser ${randomTrait}
 - Aproximadamente ${randomAge} anos de idade
 - Seed de aleatoriedade: ${randomSeed}
@@ -106,6 +111,7 @@ O NPC deve ter as seguintes informações:
 7. Peculiaridades ou maneirismos únicos
 
 Seja criativo e evite padrões óbvios. Crie um personagem memorável e único.
+IMPORTANTE: Mantenha todas as características específicas solicitadas acima.
 
 Responda no seguinte formato JSON:
 {
@@ -117,6 +123,8 @@ Responda no seguinte formato JSON:
   "statGuide": "Sugestão de atributos",
   "quirks": "Peculiaridades"
 }`;
+
+    return prompt;
   };
 
   const handleGenerateNPC = async () => {
@@ -126,19 +134,19 @@ Responda no seguinte formato JSON:
 
     try {
       const hf = new HfInference(process.env.REACT_APP_HUGGINGFACE_TOKEN);
-      const prompt = generatePrompt(theme, scenarioDescription);
+      const prompt = generatePrompt(theme, scenarioDescription, desiredTraits);
 
       const response = await hf.textGeneration({
         model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
         inputs: prompt,
         parameters: {
           max_new_tokens: 1024,
-          temperature: 0.9, // Aumentado para mais variação
+          temperature: 0.9,
           top_p: 0.95,
           top_k: 50,
-          repetition_penalty: 1.2, // Adicionado para evitar repetições
+          repetition_penalty: 1.2,
           return_full_text: false,
-          seed: generateRandomSeed(), // Seed aleatória a cada geração
+          seed: generateRandomSeed(),
         },
       });
 
@@ -183,6 +191,16 @@ Responda no seguinte formato JSON:
             value={scenarioDescription}
             onChange={(e) => setScenarioDescription(e.target.value)}
             placeholder="Descreva o cenário onde o NPC está inserido..."
+            rows={4}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Características Desejadas (Opcional)</label>
+          <textarea
+            value={desiredTraits}
+            onChange={(e) => setDesiredTraits(e.target.value)}
+            placeholder="Ex: Guerreiro experiente, cicatriz no rosto, especialista em magia"
             rows={4}
           />
         </div>
