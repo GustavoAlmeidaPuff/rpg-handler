@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import './creatures.css';
 
 const Creatures = () => {
   const [creatures, setCreatures] = useState([]);
   const [filteredCreatures, setFilteredCreatures] = useState([]);
+  const [displayedCreatures, setDisplayedCreatures] = useState([]);
   const [selectedCreature, setSelectedCreature] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
+  const ITEMS_PER_PAGE = 20;
+
   const [filters, setFilters] = useState({
     name: '',
     type: '',
@@ -16,31 +23,71 @@ const Creatures = () => {
     challengeRating: ''
   });
 
+  const lastCreatureElementRef = useCallback(node => {
+    if (isLoading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [isLoading, hasMore]);
+
   useEffect(() => {
     const fetchCreatures = async () => {
+      setIsLoading(true);
       try {
         const response = await fetch('https://www.dnd5eapi.co/api/monsters');
         const data = await response.json();
         
-        const detailedCreatures = await Promise.all(
-          data.results.map(async (creature) => {
+        // Carregar apenas os primeiros ITEMS_PER_PAGE monstros inicialmente
+        const initialCreatures = await Promise.all(
+          data.results.slice(0, ITEMS_PER_PAGE).map(async (creature) => {
             const detailResponse = await fetch(`https://www.dnd5eapi.co${creature.url}`);
             return detailResponse.json();
           })
         );
         
-        setCreatures(detailedCreatures);
-        setFilteredCreatures(detailedCreatures);
+        setCreatures(data.results); // Guardar apenas as referências
+        setFilteredCreatures(initialCreatures);
+        setDisplayedCreatures(initialCreatures);
       } catch (error) {
         console.error('Erro ao buscar criaturas:', error);
       }
+      setIsLoading(false);
     };
 
     fetchCreatures();
   }, []);
 
   useEffect(() => {
-    const filtered = creatures.filter(creature => {
+    const loadMoreCreatures = async () => {
+      if (!isLoading && creatures.length > 0) {
+        const startIndex = (page - 1) * ITEMS_PER_PAGE;
+        const endIndex = page * ITEMS_PER_PAGE;
+        
+        if (startIndex < creatures.length) {
+          setIsLoading(true);
+          const newCreatures = await Promise.all(
+            creatures.slice(startIndex, endIndex).map(async (creature) => {
+              const detailResponse = await fetch(`https://www.dnd5eapi.co${creature.url}`);
+              return detailResponse.json();
+            })
+          );
+          
+          setFilteredCreatures(prev => [...prev, ...newCreatures]);
+          setHasMore(endIndex < creatures.length);
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadMoreCreatures();
+  }, [page, creatures]);
+
+  useEffect(() => {
+    const filtered = filteredCreatures.filter(creature => {
       const nameMatch = creature.name.toLowerCase().includes(filters.name.toLowerCase());
       const typeMatch = !filters.type || creature.type.toLowerCase() === filters.type.toLowerCase();
       const acMatch = (!filters.minAC || creature.armor_class[0].value >= parseInt(filters.minAC)) &&
@@ -52,8 +99,8 @@ const Creatures = () => {
       return nameMatch && typeMatch && acMatch && hpMatch && crMatch;
     });
 
-    setFilteredCreatures(filtered);
-  }, [filters, creatures]);
+    setDisplayedCreatures(filtered);
+  }, [filters, filteredCreatures]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -61,6 +108,7 @@ const Creatures = () => {
       ...prev,
       [name]: value
     }));
+    setPage(1); // Resetar a paginação quando os filtros mudam
   };
 
   const getRecommendedLevel = (cr) => {
@@ -71,7 +119,7 @@ const Creatures = () => {
     setSelectedCreature(creature);
   };
 
-  const creatureTypes = [...new Set(creatures.map(creature => creature.type))];
+  const creatureTypes = [...new Set(filteredCreatures.map(creature => creature.type))];
 
   return (
     <div className="creatures-container">
@@ -139,9 +187,10 @@ const Creatures = () => {
 
       <div className="content-section">
         <div className="creatures-list">
-          {filteredCreatures.map(creature => (
+          {displayedCreatures.map((creature, index) => (
             <div
               key={creature.index}
+              ref={index === displayedCreatures.length - 1 ? lastCreatureElementRef : null}
               className={`creature-card ${selectedCreature?.index === creature.index ? 'selected' : ''}`}
               onClick={() => handleCreatureClick(creature)}
             >
@@ -154,6 +203,11 @@ const Creatures = () => {
               </div>
             </div>
           ))}
+          {isLoading && (
+            <div className="loading-message">
+              <p>Carregando criaturas...</p>
+            </div>
+          )}
         </div>
 
         {selectedCreature && (
