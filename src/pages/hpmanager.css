@@ -67,6 +67,18 @@
 .character-name {
   font-size: 1.1rem;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.condition-badge {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
 }
 
 .hp-controls {
@@ -242,3 +254,26 @@
   margin-right: 6px;
   opacity: 0.9;
 }
+
+/* Estilos para as condições */
+.character-hp-item.condition-agarrado { background-color: #ffd7b5; }
+.character-hp-item.condition-amedrontado { background-color: #e6d0ff; }
+.character-hp-item.condition-atordoado { background-color: #ffd9e6; }
+.character-hp-item.condition-caido { background-color: #d9d9d9; }
+.character-hp-item.condition-cego { background-color: #000000; color: white; }
+.character-hp-item.condition-confuso { background-color: #ffe6cc; }
+.character-hp-item.condition-contido { background-color: #b3b3b3; }
+.character-hp-item.condition-desafiado { background-color: #ffcccc; }
+.character-hp-item.condition-dominado { background-color: #e6ccff; }
+.character-hp-item.condition-enfeiticado { background-color: #ffb3ff; }
+.character-hp-item.condition-envenenado { background-color: #ccffcc; }
+.character-hp-item.condition-exaustao { background-color: #ffebcc; }
+.character-hp-item.condition-incapacitado { background-color: #ffcccc; }
+.character-hp-item.condition-inconsciente { background-color: #ff9999; }
+.character-hp-item.condition-invisivel { background-color: #f2f2f2; opacity: 0.7; }
+.character-hp-item.condition-marcado { background-color: #ffcccc; }
+.character-hp-item.condition-paralisado { background-color: #e6e6ff; }
+.character-hp-item.condition-petrificado { background-color: #cccccc; }
+.character-hp-item.condition-possuido { background-color: #ffe6e6; }
+.character-hp-item.condition-rastreado { background-color: #fff2cc; }
+.character-hp-item.condition-surdo { background-color: #e6ffff; }

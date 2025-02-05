@@ -119,11 +119,18 @@ function HPManager() {
           {characters.map((char, index) => (
             <div 
               key={index} 
-              className={`character-hp-item ${(hpValues[char.name] || 0) < 1 ? 'negative-hp' : ''}`}
+              className={`character-hp-item ${(hpValues[char.name] || 0) < 1 ? 'negative-hp' : ''} ${char.condition ? `condition-${char.condition}` : ''}`}
             >
               <div className="character-info">
                 <span className="initiative-number">{char.initiative}</span>
-                <span className="character-name">{char.name}</span>
+                <span className="character-name">
+                  {char.name}
+                  {char.condition && (
+                    <span className="condition-badge">
+                      {char.condition.charAt(0).toUpperCase() + char.condition.slice(1)}
+                    </span>
+                  )}
+                </span>
               </div>
               
               <div className="hp-controls">
