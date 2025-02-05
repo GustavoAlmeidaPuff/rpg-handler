@@ -10,6 +10,8 @@ function Spells() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [allSpellsData, setAllSpellsData] = useState([]);
+  const [tempNameFilter, setTempNameFilter] = useState('');
+  const [tempLevelFilter, setTempLevelFilter] = useState('all');
   const SPELLS_PER_PAGE = 20;
 
   // Referência para o elemento observador
@@ -48,9 +50,18 @@ function Spells() {
       if (!allSpellsData.length) return;
 
       setLoading(true);
+      
+      // Filtrar allSpellsData antes de carregar os detalhes
+      let filteredData = allSpellsData;
+      if (nameFilter) {
+        filteredData = filteredData.filter(spell => 
+          spell.name.toLowerCase().includes(nameFilter.toLowerCase())
+        );
+      }
+
       const startIndex = page * SPELLS_PER_PAGE;
       const endIndex = startIndex + SPELLS_PER_PAGE;
-      const currentPageSpells = allSpellsData.slice(startIndex, endIndex);
+      const currentPageSpells = filteredData.slice(startIndex, endIndex);
 
       if (currentPageSpells.length === 0) {
         setHasMore(false);
@@ -65,7 +76,18 @@ function Spells() {
           )
         );
 
-        setSpells(prevSpells => [...prevSpells, ...newSpellsDetails]);
+        // Filtrar por nível após ter os detalhes
+        const levelFilteredSpells = levelFilter === 'all' 
+          ? newSpellsDetails 
+          : newSpellsDetails.filter(spell => spell.level === parseInt(levelFilter));
+
+        if (page === 0) {
+          setSpells(levelFilteredSpells);
+        } else {
+          setSpells(prevSpells => [...prevSpells, ...levelFilteredSpells]);
+        }
+        
+        setHasMore(currentPageSpells.length === SPELLS_PER_PAGE);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching spell details:', error);
@@ -74,20 +96,15 @@ function Spells() {
     };
 
     loadSpellDetails();
-  }, [page, allSpellsData]);
+  }, [page, allSpellsData, nameFilter, levelFilter]);
 
-  // Resetar a lista quando os filtros mudam
-  useEffect(() => {
+  const handleFilter = () => {
+    setNameFilter(tempNameFilter);
+    setLevelFilter(tempLevelFilter);
     setSpells([]);
     setPage(0);
     setHasMore(true);
-  }, [nameFilter, levelFilter]);
-
-  const filteredSpells = spells.filter(spell => {
-    const nameMatch = spell.name.toLowerCase().includes(nameFilter.toLowerCase());
-    const levelMatch = levelFilter === 'all' || spell.level === parseInt(levelFilter);
-    return nameMatch && levelMatch;
-  });
+  };
 
   return (
     <div className="spells-container">
@@ -97,13 +114,16 @@ function Spells() {
         <input
           type="text"
           placeholder="Filtrar por nome..."
-          value={nameFilter}
-          onChange={(e) => setNameFilter(e.target.value)}
+          value={tempNameFilter}
+          onChange={(e) => setTempNameFilter(e.target.value)}
           className="name-filter"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') handleFilter();
+          }}
         />
         <select
-          value={levelFilter}
-          onChange={(e) => setLevelFilter(e.target.value)}
+          value={tempLevelFilter}
+          onChange={(e) => setTempLevelFilter(e.target.value)}
           className="level-filter"
         >
           <option value="all">Todos os níveis</option>
@@ -118,18 +138,21 @@ function Spells() {
           <option value="8">Nível 8</option>
           <option value="9">Nível 9</option>
         </select>
+        <button onClick={handleFilter} className="filter-button">
+          Filtrar
+        </button>
       </div>
 
       <div className="spells-list">
-        {filteredSpells.length === 0 && !loading ? (
+        {spells.length === 0 && !loading ? (
           <div className="no-spells-message">
             Nenhuma magia encontrada com os filtros atuais.
           </div>
         ) : (
-          filteredSpells.map((spell, index) => (
+          spells.map((spell, index) => (
             <div 
               key={spell.index} 
-              ref={index === filteredSpells.length - 1 ? lastSpellElementRef : null}
+              ref={index === spells.length - 1 ? lastSpellElementRef : null}
               className="spell-card"
             >
               <div className="spell-header">
