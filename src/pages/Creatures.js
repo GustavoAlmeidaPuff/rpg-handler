@@ -131,6 +131,62 @@ const Creatures = () => {
     }
   };
 
+  const extractAttacks = (actions) => {
+    if (!actions) return [];
+    
+    return actions
+      .filter(action => {
+        // Filtra ações que são ataques (contém informações de ataque/dano em inglês ou português)
+        const hasAttackRoll = action.desc.includes('attack roll') || 
+                             action.desc.includes('to hit') ||
+                             action.desc.includes('ataque') ||
+                             action.desc.includes('para acertar');
+        const hasDamage = action.desc.includes('damage') || action.desc.includes('dano');
+        return hasAttackRoll || hasDamage;
+      })
+      .map(action => {
+        const attack = {
+          name: action.name,
+          toHit: null,
+          damage: [],
+          desc: action.desc
+        };
+
+        // Extrai o bônus de ataque (inglês e português)
+        const toHitMatchEn = action.desc.match(/([+-]\d+) to hit/);
+        const toHitMatchPt = action.desc.match(/([+-]\d+) para acertar/);
+        if (toHitMatchEn) {
+          attack.toHit = toHitMatchEn[1];
+        } else if (toHitMatchPt) {
+          attack.toHit = toHitMatchPt[1];
+        }
+
+        // Extrai os danos (inglês e português)
+        const damageRegexEn = /(\d+\s*\([^)]+\)|(?:\d+\s*)+)\s*([\w\s]+)\s*damage/g;
+        const damageRegexPt = /(\d+\s*\([^)]+\)|(?:\d+\s*)+)\s*(?:de\s+)?dano\s+([\w\s]+)/g;
+        
+        let damageMatch;
+        
+        // Tenta encontrar padrões de dano em inglês
+        while ((damageMatch = damageRegexEn.exec(action.desc)) !== null) {
+          attack.damage.push({
+            damage: damageMatch[1],
+            type: damageMatch[2].trim()
+          });
+        }
+        
+        // Tenta encontrar padrões de dano em português
+        while ((damageMatch = damageRegexPt.exec(action.desc)) !== null) {
+          attack.damage.push({
+            damage: damageMatch[1],
+            type: damageMatch[2].trim()
+          });
+        }
+
+        return attack;
+      });
+  };
+
   const translateCreatureDetails = async (creature) => {
     if (!creature) return null;
 
@@ -153,12 +209,23 @@ const Creatures = () => {
       }
 
       if (creature.actions) {
+        // Separar ações que são ataques das que não são
+        const attacks = extractAttacks(creature.actions);
+        const attackNames = attacks.map(attack => attack.name);
+
         translatedDetails.actions = await Promise.all(
-          creature.actions.map(async (action) => ({
-            ...action,
-            name: await translateText(action.name),
-            desc: await translateText(action.desc),
-          }))
+          creature.actions.map(async (action) => {
+            // Se a ação for um ataque, mantém em inglês
+            if (attackNames.includes(action.name)) {
+              return action;
+            }
+            // Se não for ataque, traduz normalmente
+            return {
+              ...action,
+              name: await translateText(action.name),
+              desc: await translateText(action.desc),
+            };
+          })
         );
       }
 
@@ -272,44 +339,6 @@ const Creatures = () => {
         console.error('Erro ao copiar:', err);
       }
     }
-  };
-
-  const extractAttacks = (actions) => {
-    if (!actions) return [];
-    
-    return actions
-      .filter(action => {
-        // Filtra ações que são ataques (contém informações de ataque/dano)
-        const hasAttackRoll = action.desc.includes('attack roll') || action.desc.includes('to hit');
-        const hasDamage = action.desc.includes('damage');
-        return hasAttackRoll || hasDamage;
-      })
-      .map(action => {
-        const attack = {
-          name: action.name,
-          toHit: null,
-          damage: [],
-          desc: action.desc
-        };
-
-        // Extrai o bônus de ataque
-        const toHitMatch = action.desc.match(/([+-]\d+) to hit/);
-        if (toHitMatch) {
-          attack.toHit = toHitMatch[1];
-        }
-
-        // Extrai os danos
-        const damageRegex = /(\d+\s*\([^)]+\)|(?:\d+\s*)+)\s*([\w\s]+)\s*damage/g;
-        let damageMatch;
-        while ((damageMatch = damageRegex.exec(action.desc)) !== null) {
-          attack.damage.push({
-            damage: damageMatch[1],
-            type: damageMatch[2].trim()
-          });
-        }
-
-        return attack;
-      });
   };
 
   return (
