@@ -57,6 +57,28 @@
   background-color: #4fa8d1;
 }
 
+/* Mobile Controls */
+.mobile-controls {
+  display: none;
+  align-items: center;
+  gap: 1rem;
+}
+
+.login-button.mobile {
+  background-color: #61dafb;
+  color: #282c34;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.login-button.mobile:hover {
+  background-color: #4fa8d1;
+}
+
 /* Hamburger Menu */
 .hamburger {
   display: none;
@@ -125,6 +147,10 @@
     display: none;
   }
 
+  .mobile-controls {
+    display: flex;
+  }
+
   .hamburger {
     display: flex;
   }
@@ -135,6 +161,10 @@
 
   .header {
     padding: 1rem;
+  }
+
+  .header-content {
+    width: 100%;
   }
 }
 
