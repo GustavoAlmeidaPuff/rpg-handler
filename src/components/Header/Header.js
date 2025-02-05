@@ -26,6 +26,7 @@ function Header() {
           <Link to="/initiative" className="nav-link">Iniciativa</Link>
           <Link to="/hp" className="nav-link">HP</Link>
           <Link to="/spells" className="nav-link">Magias</Link>
+          <Link to="/creatures" className="nav-link">Criaturas</Link>
         </nav>
 
         {/* Botão Hamburguer */}
@@ -46,6 +47,7 @@ function Header() {
             <Link to="/initiative" className="nav-link" onClick={closeMenu}>Iniciativa</Link>
             <Link to="/hp" className="nav-link" onClick={closeMenu}>HP</Link>
             <Link to="/spells" className="nav-link" onClick={closeMenu}>Magias</Link>
+            <Link to="/creatures" className="nav-link" onClick={closeMenu}>Criaturas</Link>
           </nav>
         </div>
       </div>

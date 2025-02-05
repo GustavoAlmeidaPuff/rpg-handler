@@ -7,6 +7,7 @@ import Footer from './components/Footer/Footer.js';
 import Hp from './pages/HPmanager.js';
 import Spells from './pages/Spells';
 import SpellDetail from './pages/SpellDetail';
+import Creatures from './pages/Creatures.js';
 import './App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/hp" element={<Hp />} />
             <Route path="/spells" element={<Spells />} />
             <Route path="/spells/:index" element={<SpellDetail />} />
+            <Route path="/creatures" element={<Creatures />} />
           </Routes>
         </main>
         <Footer />
