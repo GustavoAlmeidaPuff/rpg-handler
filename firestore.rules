@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Regra base: nega todos os acessos por padrão
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Regras para dados de iniciativa
+    match /initiativeData/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Regras para dados de HP
+    match /hpData/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Regras para dados gerais do usuário
+    match /userData/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+} 
