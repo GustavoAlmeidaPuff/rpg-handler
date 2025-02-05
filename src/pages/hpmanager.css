@@ -31,6 +31,7 @@
 }
 
 .character-hp-item {
+  justify-content: space-between;
   background: white;
   border-radius: 8px;
   padding: 1rem;
@@ -84,7 +85,7 @@
 .hp-controls {
   display: flex;
   gap: 1rem;
-  flex: 1;
+  /* flex: 1; */
   align-items: center;
   flex-wrap: wrap;
 }
@@ -149,6 +150,7 @@
   }
 
   .character-hp-item {
+    justify-content: space-between;
     flex-direction: column;
     align-items: stretch;
   }
