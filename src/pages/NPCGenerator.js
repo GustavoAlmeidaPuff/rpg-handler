@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { HfInference } from '@huggingface/inference';
 import './npcgenerator.css';
 
 function NPCGenerator() {
@@ -6,6 +7,7 @@ function NPCGenerator() {
   const [scenarioDescription, setScenarioDescription] = useState('');
   const [npc, setNpc] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const themes = [
     'Fantasia Medieval',
@@ -21,23 +23,64 @@ function NPCGenerator() {
     'Espacial/Sci-Fi'
   ];
 
-  const handleGenerateNPC = () => {
+  const generatePrompt = (theme, description) => {
+    return `Gere um NPC detalhado para um cenário de RPG com tema ${theme}${description ? ` no seguinte contexto: ${description}` : ''}.
+
+O NPC deve ter as seguintes informações:
+1. Nome completo e/ou apelido apropriado para o cenário
+2. Aparência física detalhada
+3. Personalidade e comportamento
+4. História de fundo/Background
+5. Características principais e habilidades
+6. Sugestão de atributos (força, destreza, etc) baseado na descrição
+7. Peculiaridades ou maneirismos únicos
+
+Responda no seguinte formato JSON:
+{
+  "name": "Nome do NPC",
+  "appearance": "Descrição da aparência",
+  "personality": "Descrição da personalidade",
+  "background": "História do personagem",
+  "characteristics": "Características e habilidades",
+  "statGuide": "Sugestão de atributos",
+  "quirks": "Peculiaridades"
+}`;
+  };
+
+  const handleGenerateNPC = async () => {
     setIsLoading(true);
-    // Aqui será implementada a chamada para a API de IA
-    // Por enquanto, vamos simular uma resposta
-    setTimeout(() => {
-      const mockNPC = {
-        name: 'Marcus "Chip" Silva',
-        appearance: 'Um homem alto e magro com cabelos grisalhos precoces, usa óculos de realidade aumentada e tem várias tatuagens de circuitos nos braços.',
-        personality: 'Introvertido e calculista, mas surpreendentemente carismático quando o assunto é tecnologia. Tem um senso de humor seco e sarcástico.',
-        background: 'Ex-programador corporativo que agora trabalha no mercado negro de implantes neurais.',
-        characteristics: 'Possui conhecimento excepcional de tecnologia e redes, mas sua constituição física é fraca devido a anos de trabalho sedentário.',
-        statGuide: 'Sugestão de Atributos: Alta Inteligência e Carisma, Baixa Força e Constituição.',
-        quirks: 'Sempre carrega um deck de cartas modificado com hologramas e nunca consegue manter contato visual por mais de alguns segundos.'
-      };
-      setNpc(mockNPC);
+    setError(null);
+
+    try {
+      const hf = new HfInference(process.env.REACT_APP_HUGGINGFACE_TOKEN);
+      const prompt = generatePrompt(theme, scenarioDescription);
+
+      const response = await hf.textGeneration({
+        model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+        inputs: prompt,
+        parameters: {
+          max_new_tokens: 1024,
+          temperature: 0.7,
+          top_p: 0.95,
+          return_full_text: false,
+        },
+      });
+
+      try {
+        // Encontra o primeiro objeto JSON válido na resposta
+        const jsonStr = response.generated_text.match(/\{[\s\S]*\}/)[0];
+        const generatedNPC = JSON.parse(jsonStr);
+        setNpc(generatedNPC);
+      } catch (parseError) {
+        console.error('Erro ao processar resposta:', parseError);
+        setError('Erro ao processar a resposta da IA. Tente novamente.');
+      }
+    } catch (apiError) {
+      console.error('Erro na API:', apiError);
+      setError('Erro ao conectar com a IA. Verifique sua conexão e tente novamente.');
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -76,6 +119,12 @@ function NPCGenerator() {
         >
           {isLoading ? 'Gerando NPC...' : 'Gerar NPC'}
         </button>
+
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
       </div>
 
       {npc && (

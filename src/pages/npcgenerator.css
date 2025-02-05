@@ -82,6 +82,18 @@
   cursor: not-allowed;
 }
 
+.error-message {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #feb2b2;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
 .npc-card {
   background: white;
   padding: 2rem;
