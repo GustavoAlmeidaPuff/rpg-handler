@@ -81,7 +81,7 @@ function NPCGenerator() {
   };
 
   const generatePrompt = (theme, scenarioDetails, characterDetails) => {
-    return `<|system|>Você é um mestre de RPG experiente. Crie uma descrição detalhada e envolvente de um NPC para uma campanha com a temática ${theme}. 
+    return `<|system|>Você é um mestre de RPG experiente. Crie uma descrição detalhada e envolvente de um NPC com a temática ${theme}. 
     
 Detalhes do cenário fornecidos:
 ${scenarioDetails}
@@ -91,7 +91,14 @@ ${characterDetails}
 
 Com base nesses detalhes do cenário e do personagem, crie um personagem que se encaixe perfeitamente nesse mundo e possa interagir de forma significativa com ele. Inclua detalhes sobre sua aparência, personalidade, história de vida, motivações e peculiaridades de uma forma narrativa e fluida, como se estivesse contando uma história sobre este personagem.
 
+não comece com frases como "o nome do personagem é" ou "o personagem se chama" ou "o nome do personagem é".
+
+a resposta DEVE começar com o nome do personagem, depois a descrição dele direto.
+
+responde em português do brasil
+
 <|output|>`;
+
   };
 
   const handleGenerateNPC = async () => {
