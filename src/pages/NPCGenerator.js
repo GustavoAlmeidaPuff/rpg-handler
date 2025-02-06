@@ -7,8 +7,6 @@ import '../styles/global.css';
 
 function NPCGenerator() {
   const [theme, setTheme] = useState('');
-  const [scenarioDescription, setScenarioDescription] = useState('');
-  const [desiredTraits, setDesiredTraits] = useState('');
   const [npc, setNpc] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -82,7 +80,7 @@ ${npc.quirks}`;
     return Math.floor(Math.random() * 1000000);
   };
 
-  const generatePrompt = (theme, description, traits) => {
+  const generatePrompt = (theme) => {
     const randomTraits = [
       'ambicioso', 'cauteloso', 'corajoso', 'criativo', 'curioso',
       'determinado', 'divertido', 'empático', 'energético', 'focado',
@@ -94,31 +92,33 @@ ${npc.quirks}`;
     const randomAge = Math.floor(Math.random() * 50) + 20;
     const randomSeed = generateRandomSeed();
 
-    let prompt = `<|system|>Você é uma API REST que retorna apenas JSON. Não adicione nada além do JSON. Gere um NPC detalhado para RPG com os seguintes campos obrigatórios, seguindo EXATAMENTE o formato especificado:
+    let prompt = `<|system|>Você é uma API REST especializada em gerar NPCs temáticos para RPG. Retorne apenas JSON válido com um NPC completo e detalhado baseado na temática fornecida.
 
-INSTRUÇÕES IMPORTANTES:
-1. Cada campo deve conter o número mínimo de caracteres especificado
-2. Não inclua aspas extras ou caracteres especiais
-3. Mantenha o formato JSON válido
-4. Characteristics deve listar pelo menos 3 habilidades ou competências específicas
-5. Quirks deve listar pelo menos 2 maneirismos ou peculiaridades únicas
+INSTRUÇÕES:
+1. Gere um NPC coerente com a temática "${theme}"
+2. Mantenha o formato JSON válido
+3. Inclua detalhes específicos da temática em todos os campos
+4. Characteristics deve ter 3-5 habilidades relevantes à temática, SEMPRE separadas por vírgula
+5. Quirks DEVE ter EXATAMENTE 3 maneirismos únicos, SEMPRE separados por vírgula
+6. Não use ponto e vírgula, use APENAS vírgula como separador
+
+EXEMPLO DE QUIRKS:
+"quirks": "Sempre fala sussurrando, Coleciona botões de todas as cores, Tem medo de pássaros"
 
 <|format|>
 {
-  "name": "Nome completo do personagem (mínimo 3 caracteres)",
-  "appearance": "Descrição física detalhada incluindo altura, peso, características marcantes, vestimentas e outros detalhes visuais relevantes (mínimo 50 caracteres)",
-  "personality": "Descrição da personalidade incluindo temperamento, atitudes, crenças e comportamentos típicos (mínimo 50 caracteres)",
-  "background": "História de vida detalhada incluindo origem, eventos importantes e motivações atuais (mínimo 100 caracteres)",
-  "characteristics": "Lista detalhada de pelo menos 3 habilidades e competências principais, incluindo proficiências, talentos especiais e áreas de expertise (mínimo 50 caracteres)",
-  "statGuide": "Sugestões numéricas ou qualitativas de atributos principais e secundários relevantes para o sistema (mínimo 50 caracteres)",
-  "quirks": "Lista de pelo menos 2 maneirismos únicos, tiques nervosos, hábitos peculiares ou características distintivas de comportamento (mínimo 30 caracteres)"
+  "name": "Nome apropriado à temática",
+  "appearance": "Descrição física detalhada com elementos visuais típicos da temática",
+  "personality": "Personalidade e comportamento moldados pelo ambiente temático",
+  "background": "História de vida conectada à temática e ao mundo",
+  "characteristics": "Primeira habilidade relevante à temática, Segunda habilidade relevante, Terceira habilidade relevante",
+  "statGuide": "Atributos e estatísticas sugeridos para o tema",
+  "quirks": "Primeiro maneirismo único, Segundo maneirismo único, Terceiro maneirismo único"
 }
 
 <|input|>
 {
   "theme": "${theme}",
-  ${description ? `"scenario": "${description}",` : ''}
-  ${traits ? `"traits": "${traits}",` : ''}
   "tendency": "${randomTrait}",
   "age": ${randomAge},
   "seed": ${randomSeed}
@@ -136,34 +136,32 @@ INSTRUÇÕES IMPORTANTES:
 
     try {
       const hf = new HfInference(process.env.REACT_APP_HUGGINGFACE_TOKEN);
-      const prompt = generatePrompt(theme, scenarioDescription, desiredTraits);
+      const prompt = generatePrompt(theme);
 
       const response = await hf.textGeneration({
         model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
         inputs: prompt,
         parameters: {
-          max_new_tokens: 1200,
-          temperature: 0.8,
-          top_p: 0.95,
+          max_new_tokens: 1000,
+          temperature: 0.75,
+          top_p: 0.85,
           top_k: 40,
-          repetition_penalty: 1.1,
+          repetition_penalty: 1.2,
           return_full_text: false,
           stop: ["<", "\n\n", "```"],
           seed: generateRandomSeed(),
         },
       });
 
-      console.log('Resposta bruta da IA:', response);
-
       try {
         let cleanText = response.generated_text
           .replace(/```json/g, '')
           .replace(/```/g, '')
-          .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove caracteres de controle
-          .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove caracteres de largura zero
+          .replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
+          .replace(/[\u200B-\u200D\uFEFF]/g, '')
+          .replace(/;/g, ',')
           .trim();
 
-        // Encontra o primeiro '{' e último '}'
         const startIndex = cleanText.indexOf('{');
         const endIndex = cleanText.lastIndexOf('}');
 
@@ -172,74 +170,47 @@ INSTRUÇÕES IMPORTANTES:
         }
 
         const jsonStr = cleanText.substring(startIndex, endIndex + 1);
-        console.log('JSON encontrado:', jsonStr);
-
         const generatedNPC = JSON.parse(jsonStr);
 
-        // Validação detalhada dos campos com mensagens específicas
+        // Validação simplificada e otimizada
         const validations = {
-          name: (val) => {
-            if (typeof val !== 'string') return 'deve ser uma string';
-            if (val.trim().length < 3) return 'deve ter pelo menos 3 caracteres';
-            return null;
-          },
-          appearance: (val) => {
-            if (typeof val !== 'string') return 'deve ser uma string';
-            if (val.trim().length < 50) return 'deve ter pelo menos 50 caracteres';
-            return null;
-          },
-          personality: (val) => {
-            if (typeof val !== 'string') return 'deve ser uma string';
-            if (val.trim().length < 50) return 'deve ter pelo menos 50 caracteres';
-            return null;
-          },
-          background: (val) => {
-            if (typeof val !== 'string') return 'deve ser uma string';
-            if (val.trim().length < 100) return 'deve ter pelo menos 100 caracteres';
-            return null;
-          },
+          name: (val) => val?.trim().length >= 3 ? null : 'nome muito curto',
+          appearance: (val) => val?.trim().length >= 50 ? null : 'descrição física incompleta',
+          personality: (val) => val?.trim().length >= 50 ? null : 'personalidade incompleta',
+          background: (val) => val?.trim().length >= 100 ? null : 'história incompleta',
           characteristics: (val) => {
-            if (typeof val !== 'string') return 'deve ser uma string';
-            if (val.trim().length < 50) return 'deve ter pelo menos 50 caracteres';
-            if (!val.includes(',') && !val.includes(';')) return 'deve listar pelo menos 3 habilidades separadas por vírgula';
-            return null;
+            const text = val?.trim() || '';
+            if (text.length < 50) return 'habilidades incompletas';
+            const items = text.split(',').filter(i => i.trim().length > 0);
+            return items.length >= 3 ? null : 'precisa de pelo menos 3 habilidades separadas por vírgula';
           },
-          statGuide: (val) => {
-            if (typeof val !== 'string') return 'deve ser uma string';
-            if (val.trim().length < 50) return 'deve ter pelo menos 50 caracteres';
-            return null;
-          },
+          statGuide: (val) => val?.trim().length >= 50 ? null : 'guia de atributos incompleto',
           quirks: (val) => {
-            if (typeof val !== 'string') return 'deve ser uma string';
-            if (val.trim().length < 30) return 'deve ter pelo menos 30 caracteres';
-            if (!val.includes(',') && !val.includes(';')) return 'deve listar pelo menos 2 peculiaridades separadas por vírgula';
+            const text = val?.trim() || '';
+            if (text.length < 30) return 'peculiaridades incompletas';
+            const items = text.split(',').filter(i => i.trim().length > 0);
+            if (items.length < 2) return 'precisa de pelo menos 2 peculiaridades separadas por vírgula';
+            if (items.some(item => item.trim().length < 5)) return 'cada peculiaridade deve ter pelo menos 5 caracteres';
             return null;
           }
         };
 
-        const invalidFields = [];
-        const validationMessages = [];
+        const errors = Object.entries(validations)
+          .map(([field, validator]) => ({
+            field,
+            error: validator(generatedNPC[field])
+          }))
+          .filter(({error}) => error !== null);
 
-        Object.entries(validations).forEach(([field, validator]) => {
-          const error = validator(generatedNPC[field]);
-          if (error) {
-            invalidFields.push(field);
-            validationMessages.push(`${field}: ${error}`);
-          }
-        });
-
-        if (invalidFields.length > 0) {
-          console.error('Campos inválidos:', invalidFields);
-          console.error('Detalhes da validação:', validationMessages);
-          console.error('Valores dos campos:', invalidFields.reduce((acc, field) => ({
-            ...acc,
-            [field]: generatedNPC[field]
-          }), {}));
+        if (errors.length > 0) {
+          const errorFields = errors.map(({field}) => field);
+          const errorMessages = errors.map(({field, error}) => `${field}: ${error}`);
           
-          throw new Error(`Campos inválidos ou incompletos: ${invalidFields.join(', ')}. ${validationMessages.join('; ')}`);
+          console.error('Validação falhou:', errors);
+          throw new Error(`Campos inválidos: ${errorFields.join(', ')}. ${errorMessages.join('; ')}`);
         }
 
-        // Limpa os campos
+        // Limpa e formata os campos
         Object.keys(generatedNPC).forEach(key => {
           if (typeof generatedNPC[key] === 'string') {
             generatedNPC[key] = generatedNPC[key]
@@ -268,8 +239,6 @@ INSTRUÇÕES IMPORTANTES:
       const npcData = {
         ...npc,
         theme,
-        scenarioDescription,
-        desiredTraits,
         createdAt: serverTimestamp(),
       };
 
@@ -299,26 +268,6 @@ INSTRUÇÕES IMPORTANTES:
               <option key={index} value={theme}>{theme}</option>
             ))}
           </select>
-        </div>
-
-        <div className="form-group">
-          <label>Descrição do Cenário (Opcional)</label>
-          <textarea
-            value={scenarioDescription}
-            onChange={(e) => setScenarioDescription(e.target.value)}
-            placeholder="Descreva o cenário onde o NPC está inserido..."
-            rows={4}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Características Desejadas (Opcional)</label>
-          <textarea
-            value={desiredTraits}
-            onChange={(e) => setDesiredTraits(e.target.value)}
-            placeholder="Ex: Guerreiro experiente, cicatriz no rosto, especialista em magia"
-            rows={4}
-          />
         </div>
 
         <button 
