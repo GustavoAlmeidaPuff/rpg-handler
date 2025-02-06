@@ -9,6 +9,7 @@ import '../styles/global.css';
 function NPCGenerator() {
   const [theme, setTheme] = useState('');
   const [scenarioDetails, setScenarioDetails] = useState('');
+  const [characterDetails, setCharacterDetails] = useState('');
   const [npc, setNpc] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -79,13 +80,16 @@ function NPCGenerator() {
     return Math.floor(Math.random() * 1000000);
   };
 
-  const generatePrompt = (theme, scenarioDetails) => {
+  const generatePrompt = (theme, scenarioDetails, characterDetails) => {
     return `<|system|>Você é um mestre de RPG experiente. Crie uma descrição detalhada e envolvente de um NPC para uma campanha com a temática ${theme}. 
     
 Detalhes do cenário fornecidos:
 ${scenarioDetails}
 
-Com base nesses detalhes do cenário, crie um personagem que se encaixe perfeitamente nesse mundo e possa interagir de forma significativa com ele. Inclua detalhes sobre sua aparência, personalidade, história de vida, motivações e peculiaridades de uma forma narrativa e fluida, como se estivesse contando uma história sobre este personagem.
+Detalhes específicos do personagem desejado:
+${characterDetails}
+
+Com base nesses detalhes do cenário e do personagem, crie um personagem que se encaixe perfeitamente nesse mundo e possa interagir de forma significativa com ele. Inclua detalhes sobre sua aparência, personalidade, história de vida, motivações e peculiaridades de uma forma narrativa e fluida, como se estivesse contando uma história sobre este personagem.
 
 <|output|>`;
   };
@@ -97,7 +101,7 @@ Com base nesses detalhes do cenário, crie um personagem que se encaixe perfeita
 
     try {
       const hf = new HfInference(process.env.REACT_APP_HUGGINGFACE_TOKEN);
-      const prompt = generatePrompt(theme, scenarioDetails);
+      const prompt = generatePrompt(theme, scenarioDetails, characterDetails);
 
       const response = await hf.textGeneration({
         model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
@@ -167,6 +171,16 @@ Com base nesses detalhes do cenário, crie um personagem que se encaixe perfeita
             value={scenarioDetails}
             onChange={(e) => setScenarioDetails(e.target.value)}
             placeholder="Descreva os detalhes específicos do seu cenário, como: localização, época, eventos importantes, facções existentes, etc."
+            rows={4}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Detalhes do Personagem</label>
+          <textarea
+            value={characterDetails}
+            onChange={(e) => setCharacterDetails(e.target.value)}
+            placeholder="Descreva características específicas que você deseja que o personagem tenha, como: profissão, papel na história, tipo de personalidade, etc."
             rows={4}
           />
         </div>
