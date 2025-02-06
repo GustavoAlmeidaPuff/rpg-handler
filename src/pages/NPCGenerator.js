@@ -92,36 +92,30 @@ ${npc.quirks}`;
     const randomAge = Math.floor(Math.random() * 50) + 20;
     const randomSeed = generateRandomSeed();
 
-    let prompt = `<|system|>Você é uma API REST especializada em gerar NPCs temáticos para RPG. Retorne apenas JSON válido com um NPC completo e detalhado baseado na temática fornecida.
+    let prompt = `<|system|>Você é uma API que gera NPCs de RPG. Retorne apenas JSON válido.
 
-INSTRUÇÕES:
-1. Gere um NPC coerente com a temática "${theme}"
-2. Mantenha o formato JSON válido
-3. Inclua detalhes específicos da temática em todos os campos
-4. Characteristics deve ter 3-5 habilidades relevantes à temática, SEMPRE separadas por vírgula
-5. Quirks DEVE ter EXATAMENTE 3 maneirismos únicos, SEMPRE separados por vírgula
-6. Não use ponto e vírgula, use APENAS vírgula como separador
+REGRAS:
+1. Use a temática: ${theme}
+2. Mantenha respostas curtas e diretas
+3. Use vírgulas para separar itens
+4. Gere exatamente 3 características e 3 peculiaridades
 
-EXEMPLO DE QUIRKS:
-"quirks": "Sempre fala sussurrando, Coleciona botões de todas as cores, Tem medo de pássaros"
-
-<|format|>
+EXEMPLO:
 {
-  "name": "Nome apropriado à temática",
-  "appearance": "Descrição física detalhada com elementos visuais típicos da temática",
-  "personality": "Personalidade e comportamento moldados pelo ambiente temático",
-  "background": "História de vida conectada à temática e ao mundo",
-  "characteristics": "Primeira habilidade relevante à temática, Segunda habilidade relevante, Terceira habilidade relevante",
-  "statGuide": "Atributos e estatísticas sugeridos para o tema",
-  "quirks": "Primeiro maneirismo único, Segundo maneirismo único, Terceiro maneirismo único"
+  "name": "João Silva",
+  "appearance": "Homem alto e magro, cabelos grisalhos, veste roupas simples e gastas",
+  "personality": "Calmo e observador, prefere agir com cautela e pensar antes de falar",
+  "background": "Cresceu em uma vila pequena, trabalhou como ferreiro por anos até se aventurar pelo mundo",
+  "characteristics": "Mestre ferreiro, Especialista em armas, Conhecedor de metais",
+  "statGuide": "Força 14, Destreza 12, Constituição 13, Inteligência 15, Sabedoria 14, Carisma 10",
+  "quirks": "Fala com suas criações, Coleciona miniaturas de metal, Odeia barulhos altos"
 }
 
 <|input|>
 {
   "theme": "${theme}",
   "tendency": "${randomTrait}",
-  "age": ${randomAge},
-  "seed": ${randomSeed}
+  "age": ${randomAge}
 }
 
 <|output|>`;
@@ -142,11 +136,11 @@ EXEMPLO DE QUIRKS:
         model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
         inputs: prompt,
         parameters: {
-          max_new_tokens: 1000,
-          temperature: 0.75,
-          top_p: 0.85,
-          top_k: 40,
-          repetition_penalty: 1.2,
+          max_new_tokens: 800,
+          temperature: 0.6, // Reduzido para mais consistência
+          top_p: 0.7,
+          top_k: 30,
+          repetition_penalty: 1.1,
           return_full_text: false,
           stop: ["<", "\n\n", "```"],
           seed: generateRandomSeed(),
@@ -172,26 +166,20 @@ EXEMPLO DE QUIRKS:
         const jsonStr = cleanText.substring(startIndex, endIndex + 1);
         const generatedNPC = JSON.parse(jsonStr);
 
-        // Validação simplificada e otimizada
+        // Validação simplificada
         const validations = {
-          name: (val) => val?.trim().length >= 3 ? null : 'nome muito curto',
-          appearance: (val) => val?.trim().length >= 50 ? null : 'descrição física incompleta',
-          personality: (val) => val?.trim().length >= 50 ? null : 'personalidade incompleta',
-          background: (val) => val?.trim().length >= 100 ? null : 'história incompleta',
+          name: (val) => val?.trim().length >= 3 ? null : 'nome inválido',
+          appearance: (val) => val?.trim().length >= 20 ? null : 'aparência muito curta',
+          personality: (val) => val?.trim().length >= 20 ? null : 'personalidade muito curta',
+          background: (val) => val?.trim().length >= 30 ? null : 'história muito curta',
           characteristics: (val) => {
-            const text = val?.trim() || '';
-            if (text.length < 50) return 'habilidades incompletas';
-            const items = text.split(',').filter(i => i.trim().length > 0);
-            return items.length >= 3 ? null : 'precisa de pelo menos 3 habilidades separadas por vírgula';
+            const items = val?.trim().split(',').filter(i => i.trim().length > 0) || [];
+            return items.length === 3 ? null : 'precisa ter exatamente 3 características';
           },
-          statGuide: (val) => val?.trim().length >= 50 ? null : 'guia de atributos incompleto',
+          statGuide: (val) => val?.trim().length >= 20 ? null : 'guia de atributos muito curto',
           quirks: (val) => {
-            const text = val?.trim() || '';
-            if (text.length < 30) return 'peculiaridades incompletas';
-            const items = text.split(',').filter(i => i.trim().length > 0);
-            if (items.length < 2) return 'precisa de pelo menos 2 peculiaridades separadas por vírgula';
-            if (items.some(item => item.trim().length < 5)) return 'cada peculiaridade deve ter pelo menos 5 caracteres';
-            return null;
+            const items = val?.trim().split(',').filter(i => i.trim().length > 0) || [];
+            return items.length === 3 ? null : 'precisa ter exatamente 3 peculiaridades';
           }
         };
 
@@ -203,11 +191,8 @@ EXEMPLO DE QUIRKS:
           .filter(({error}) => error !== null);
 
         if (errors.length > 0) {
-          const errorFields = errors.map(({field}) => field);
           const errorMessages = errors.map(({field, error}) => `${field}: ${error}`);
-          
-          console.error('Validação falhou:', errors);
-          throw new Error(`Campos inválidos: ${errorFields.join(', ')}. ${errorMessages.join('; ')}`);
+          throw new Error(`Campos inválidos: ${errorMessages.join('; ')}`);
         }
 
         // Limpa e formata os campos
