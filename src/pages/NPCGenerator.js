@@ -173,7 +173,7 @@ responde em português do brasil
         </div>
 
         <div className="form-group">
-          <label>Detalhes do Cenário</label>
+          <label>Detalhes do Cenário (opcional)</label>
           <textarea
             value={scenarioDetails}
             onChange={(e) => setScenarioDetails(e.target.value)}
@@ -183,7 +183,7 @@ responde em português do brasil
         </div>
 
         <div className="form-group">
-          <label>Detalhes do Personagem</label>
+          <label>Detalhes do Personagem (opcional)</label>
           <textarea
             value={characterDetails}
             onChange={(e) => setCharacterDetails(e.target.value)}
