@@ -95,21 +95,49 @@ ${npc.quirks}`;
     let prompt = `<|system|>Você é uma API que gera NPCs de RPG. Retorne apenas JSON válido.
 
 REGRAS:
-1. Use a temática: ${theme}
-2. Mantenha respostas curtas e diretas
-3. Use vírgulas para separar itens
-4. Gere exatamente 3 características e 3 peculiaridades
+1. IMPORTANTE: Siga ESTRITAMENTE a temática "${theme}"
+2. Use elementos, termos e referências ESPECÍFICAS da temática
+3. Mantenha respostas curtas e diretas
+4. Use vírgulas para separar itens
+5. Gere exatamente 3 características e 3 peculiaridades
 
-EXEMPLO:
+${theme === 'Fantasia Medieval' ? `EXEMPLO PARA FANTASIA MEDIEVAL:
 {
-  "name": "João Silva",
-  "appearance": "Homem alto e magro, cabelos grisalhos, veste roupas simples e gastas",
-  "personality": "Calmo e observador, prefere agir com cautela e pensar antes de falar",
-  "background": "Cresceu em uma vila pequena, trabalhou como ferreiro por anos até se aventurar pelo mundo",
-  "characteristics": "Mestre ferreiro, Especialista em armas, Conhecedor de metais",
-  "statGuide": "Força 14, Destreza 12, Constituição 13, Inteligência 15, Sabedoria 14, Carisma 10",
-  "quirks": "Fala com suas criações, Coleciona miniaturas de metal, Odeia barulhos altos"
-}
+  "name": "Sir Galahad Blackforge",
+  "appearance": "Cavaleiro alto e musculoso, armadura de placas com brasão de dragão, cicatriz de batalha no rosto",
+  "personality": "Honrado e leal, segue o código da cavalaria, protege os mais fracos",
+  "background": "Filho de um ferreiro, treinou na ordem dos cavaleiros do dragão, jurou proteger o reino contra as forças das trevas",
+  "characteristics": "Mestre espadachim, Montaria experiente, Estrategista de batalha",
+  "statGuide": "Força 16, Destreza 14, Constituição 15, Inteligência 12, Sabedoria 13, Carisma 14",
+  "quirks": "Sempre limpa sua espada após usar, Reza antes de cada batalha, Coleciona brasões de ordens de cavalaria"
+}` : theme === 'Cyberpunk' ? `EXEMPLO PARA CYBERPUNK:
+{
+  "name": "Zero-X 'Neon' Rodriguez",
+  "appearance": "Corpo 60% cibernético, cabelos com implantes LED, jaqueta de couro com circuitos expostos",
+  "personality": "Frio e calculista, vive pelo código das ruas, confia apenas em dados",
+  "background": "Ex-agente corporativo, teve corpo destruído em missão, reconstruído com tecnologia experimental",
+  "characteristics": "Hacker neural avançado, Especialista em implantes, Infiltração cibernética",
+  "statGuide": "Interface 18, Reflexos 16, Tecnologia 17, Combate 14, Furtividade 15, Influência 12",
+  "quirks": "Interface neural visível pulsa quando nervoso, Fala com suas IAs, Vício em atualizações de hardware"
+}` : theme === 'Espacial/Sci-Fi' ? `EXEMPLO PARA ESPACIAL/SCI-FI:
+{
+  "name": "Cmdr. Lyra Starweaver",
+  "appearance": "Uniforme da frota estelar, implante ocular brilhante, postura militar impecável",
+  "personality": "Disciplinada e analítica, fascinada por novas descobertas, liderança natural",
+  "background": "Formada na Academia Espacial, veterana de guerras interplanetárias, comandante de nave exploradora",
+  "characteristics": "Piloto estelar, Diplomacia alienígena, Navegação espacial",
+  "statGuide": "Pilotagem 16, Ciência 15, Diplomacia 14, Tática 16, Tecnologia 15, Liderança 14",
+  "quirks": "Sempre consulta o computador de bordo, Coleciona artefatos alienígenas, Insônia em gravidade zero"
+}` : `EXEMPLO GENÉRICO:
+{
+  "name": "Nome temático apropriado",
+  "appearance": "Descrição física com elementos visuais da temática",
+  "personality": "Personalidade moldada pelo ambiente temático",
+  "background": "História conectada ao mundo temático",
+  "characteristics": "Três habilidades relevantes à temática",
+  "statGuide": "Atributos apropriados ao cenário",
+  "quirks": "Três maneirismos únicos relacionados ao tema"
+}`}
 
 <|input|>
 {
@@ -137,9 +165,9 @@ EXEMPLO:
         inputs: prompt,
         parameters: {
           max_new_tokens: 800,
-          temperature: 0.6, // Reduzido para mais consistência
-          top_p: 0.7,
-          top_k: 30,
+          temperature: 0.7,
+          top_p: 0.75,
+          top_k: 35,
           repetition_penalty: 1.1,
           return_full_text: false,
           stop: ["<", "\n\n", "```"],
