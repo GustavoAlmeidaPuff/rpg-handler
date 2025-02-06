@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { HfInference } from '@huggingface/inference';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import aiIcon from '../assets/ia-icon.png';
 import './npcgenerator.css';
 import '../styles/global.css';
 
@@ -175,6 +176,7 @@ Com base nesses detalhes do cenário, crie um personagem que se encaixe perfeita
           disabled={!theme || isLoading}
           className="generate-button"
         >
+          <img src={aiIcon} alt="AI" className="ai-icon" />
           {isLoading ? 'Gerando NPC...' : 'Gerar NPC'}
         </button>
 
