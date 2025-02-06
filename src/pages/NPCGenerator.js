@@ -94,17 +94,24 @@ ${npc.quirks}`;
     const randomAge = Math.floor(Math.random() * 50) + 20;
     const randomSeed = generateRandomSeed();
 
-    let prompt = `<|system|>Você é uma API REST que retorna apenas JSON. Não adicione nada além do JSON.
+    let prompt = `<|system|>Você é uma API REST que retorna apenas JSON. Não adicione nada além do JSON. Gere um NPC detalhado para RPG com os seguintes campos obrigatórios, seguindo EXATAMENTE o formato especificado:
+
+INSTRUÇÕES IMPORTANTES:
+1. Cada campo deve conter o número mínimo de caracteres especificado
+2. Não inclua aspas extras ou caracteres especiais
+3. Mantenha o formato JSON válido
+4. Characteristics deve listar pelo menos 3 habilidades ou competências específicas
+5. Quirks deve listar pelo menos 2 maneirismos ou peculiaridades únicas
 
 <|format|>
 {
-  "name": "string",
-  "appearance": "string",
-  "personality": "string",
-  "background": "string",
-  "characteristics": "string",
-  "statGuide": "string",
-  "quirks": "string"
+  "name": "Nome completo do personagem (mínimo 3 caracteres)",
+  "appearance": "Descrição física detalhada incluindo altura, peso, características marcantes, vestimentas e outros detalhes visuais relevantes (mínimo 50 caracteres)",
+  "personality": "Descrição da personalidade incluindo temperamento, atitudes, crenças e comportamentos típicos (mínimo 50 caracteres)",
+  "background": "História de vida detalhada incluindo origem, eventos importantes e motivações atuais (mínimo 100 caracteres)",
+  "characteristics": "Lista detalhada de pelo menos 3 habilidades e competências principais, incluindo proficiências, talentos especiais e áreas de expertise (mínimo 50 caracteres)",
+  "statGuide": "Sugestões numéricas ou qualitativas de atributos principais e secundários relevantes para o sistema (mínimo 50 caracteres)",
+  "quirks": "Lista de pelo menos 2 maneirismos únicos, tiques nervosos, hábitos peculiares ou características distintivas de comportamento (mínimo 30 caracteres)"
 }
 
 <|input|>
@@ -135,25 +142,25 @@ ${npc.quirks}`;
         model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
         inputs: prompt,
         parameters: {
-          max_new_tokens: 800,
-          temperature: 0.1, // Extremamente baixo para forçar consistência
-          top_p: 0.1, // Muito restritivo
-          top_k: 10, // Muito restritivo
-          repetition_penalty: 1.0,
+          max_new_tokens: 1200,
+          temperature: 0.8,
+          top_p: 0.95,
+          top_k: 40,
+          repetition_penalty: 1.1,
           return_full_text: false,
-          stop: ["<", "\n\n", "```"], // Para em tags ou quebras
+          stop: ["<", "\n\n", "```"],
           seed: generateRandomSeed(),
         },
       });
 
       console.log('Resposta bruta da IA:', response);
-      console.log('Texto gerado:', response.generated_text);
 
       try {
-        // Limpa a resposta
         let cleanText = response.generated_text
-          .replace(/```json/g, '') // Remove marcadores de código JSON
-          .replace(/```/g, '')     // Remove outros marcadores de código
+          .replace(/```json/g, '')
+          .replace(/```/g, '')
+          .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove caracteres de controle
+          .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove caracteres de largura zero
           .trim();
 
         // Encontra o primeiro '{' e último '}'
@@ -161,27 +168,75 @@ ${npc.quirks}`;
         const endIndex = cleanText.lastIndexOf('}');
 
         if (startIndex === -1 || endIndex === -1) {
-          console.error('Texto limpo sem JSON:', cleanText);
-          throw new Error('JSON não encontrado na resposta');
+          throw new Error('Formato de resposta inválido: JSON não encontrado');
         }
 
-        // Extrai o JSON
         const jsonStr = cleanText.substring(startIndex, endIndex + 1);
-        
         console.log('JSON encontrado:', jsonStr);
 
-        // Tenta fazer o parse
         const generatedNPC = JSON.parse(jsonStr);
 
-        // Validação dos campos
-        const requiredFields = ['name', 'appearance', 'personality', 'background', 'characteristics', 'statGuide', 'quirks'];
-        const invalidFields = requiredFields.filter(field => {
-          const value = generatedNPC[field];
-          return !value || typeof value !== 'string' || value.trim().length < 5;
+        // Validação detalhada dos campos com mensagens específicas
+        const validations = {
+          name: (val) => {
+            if (typeof val !== 'string') return 'deve ser uma string';
+            if (val.trim().length < 3) return 'deve ter pelo menos 3 caracteres';
+            return null;
+          },
+          appearance: (val) => {
+            if (typeof val !== 'string') return 'deve ser uma string';
+            if (val.trim().length < 50) return 'deve ter pelo menos 50 caracteres';
+            return null;
+          },
+          personality: (val) => {
+            if (typeof val !== 'string') return 'deve ser uma string';
+            if (val.trim().length < 50) return 'deve ter pelo menos 50 caracteres';
+            return null;
+          },
+          background: (val) => {
+            if (typeof val !== 'string') return 'deve ser uma string';
+            if (val.trim().length < 100) return 'deve ter pelo menos 100 caracteres';
+            return null;
+          },
+          characteristics: (val) => {
+            if (typeof val !== 'string') return 'deve ser uma string';
+            if (val.trim().length < 50) return 'deve ter pelo menos 50 caracteres';
+            if (!val.includes(',') && !val.includes(';')) return 'deve listar pelo menos 3 habilidades separadas por vírgula';
+            return null;
+          },
+          statGuide: (val) => {
+            if (typeof val !== 'string') return 'deve ser uma string';
+            if (val.trim().length < 50) return 'deve ter pelo menos 50 caracteres';
+            return null;
+          },
+          quirks: (val) => {
+            if (typeof val !== 'string') return 'deve ser uma string';
+            if (val.trim().length < 30) return 'deve ter pelo menos 30 caracteres';
+            if (!val.includes(',') && !val.includes(';')) return 'deve listar pelo menos 2 peculiaridades separadas por vírgula';
+            return null;
+          }
+        };
+
+        const invalidFields = [];
+        const validationMessages = [];
+
+        Object.entries(validations).forEach(([field, validator]) => {
+          const error = validator(generatedNPC[field]);
+          if (error) {
+            invalidFields.push(field);
+            validationMessages.push(`${field}: ${error}`);
+          }
         });
 
         if (invalidFields.length > 0) {
-          throw new Error(`Campos inválidos ou incompletos: ${invalidFields.join(', ')}`);
+          console.error('Campos inválidos:', invalidFields);
+          console.error('Detalhes da validação:', validationMessages);
+          console.error('Valores dos campos:', invalidFields.reduce((acc, field) => ({
+            ...acc,
+            [field]: generatedNPC[field]
+          }), {}));
+          
+          throw new Error(`Campos inválidos ou incompletos: ${invalidFields.join(', ')}. ${validationMessages.join('; ')}`);
         }
 
         // Limpa os campos
@@ -195,30 +250,8 @@ ${npc.quirks}`;
 
         setNpc(generatedNPC);
       } catch (parseError) {
-        console.error('Erro ao processar resposta:', parseError);
-        if (parseError.message.includes('JSON')) {
-          console.log('Tentando processar resposta alternativa...');
-          // Se falhar, tenta processar removendo possíveis caracteres problemáticos
-          try {
-            const cleanerText = response.generated_text
-              .replace(/[^\x20-\x7E]/g, '') // Remove caracteres não-ASCII
-              .replace(/```/g, '')          // Remove marcadores de código
-              .replace(/\n/g, ' ')          // Remove quebras de linha
-              .trim();
-            
-            const jsonMatch = cleanerText.match(/\{[\s\S]*\}/);
-            if (!jsonMatch) {
-              throw new Error('JSON não encontrado após limpeza');
-            }
-            
-            const generatedNPC = JSON.parse(jsonMatch[0]);
-            setNpc(generatedNPC);
-          } catch (secondError) {
-            setError(`Erro ao processar a resposta da IA: ${parseError.message}. Tente novamente.`);
-          }
-        } else {
-          setError(`Erro ao processar a resposta da IA: ${parseError.message}. Tente novamente.`);
-        }
+        console.error('Erro detalhado:', parseError);
+        setError(`Erro ao processar a resposta da IA: ${parseError.message}. Por favor, tente novamente.`);
       }
     } catch (apiError) {
       console.error('Erro na API:', apiError);
