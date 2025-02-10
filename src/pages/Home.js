@@ -8,6 +8,7 @@ import hpImage from '../assets/hp-preview.png';
 import spellsImage from '../assets/spells-preview.png';
 import creaturesImage from '../assets/creatures-preview.png';
 import npcGeneratorImage from '../assets/npc-generator-preview.png';
+import dicesImage from '../assets/dices-preview.png';
 
 function Home() {
   const { user } = useAuth();
@@ -101,9 +102,15 @@ function Home() {
           </div>
         </CardLink>
 
-        
-
-        
+        <CardLink to="/dice">
+          <div className="product-card">
+            <div className="card-image">
+              <img src={dicesImage} alt="Preview do rolador de dados" />
+            </div>
+            <h2>Rolador de Dados</h2>
+            <p>Role dados com animações e modificadores</p>
+          </div>
+        </CardLink>
       </section>
     </div>
   );

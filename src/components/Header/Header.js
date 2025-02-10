@@ -32,6 +32,7 @@ function Header() {
           <Link to="/spells" className={`nav-link ${location.pathname === '/spells' ? 'active' : ''}`}>Magias</Link>
           <Link to="/creatures" className={`nav-link ${location.pathname === '/creatures' ? 'active' : ''}`}>Criaturas</Link>
           <Link to="/npc-generator" className={`nav-link ${location.pathname === '/npc-generator' ? 'active' : ''}`}>Gerador de NPCs</Link>
+          <Link to="/dice" className={`nav-link ${location.pathname === '/dice' ? 'active' : ''}`}>Dados</Link>
           {user ? (
             <AccountMenu />
           ) : (
@@ -68,6 +69,7 @@ function Header() {
             <Link to="/spells" className={`nav-link ${location.pathname === '/spells' ? 'active' : ''}`} onClick={closeMenu}>Magias</Link>
             <Link to="/creatures" className={`nav-link ${location.pathname === '/creatures' ? 'active' : ''}`} onClick={closeMenu}>Criaturas</Link>
             <Link to="/npc-generator" className={`nav-link ${location.pathname === '/npc-generator' ? 'active' : ''}`} onClick={closeMenu}>Gerador de NPCs</Link>
+            <Link to="/dice" className={`nav-link ${location.pathname === '/dice' ? 'active' : ''}`} onClick={closeMenu}>Dados</Link>
           </nav>
         </div>
       </div>
