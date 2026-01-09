@@ -30,8 +30,6 @@ function Header() {
           <Link to="/initiative" className={`nav-link ${location.pathname === '/initiative' ? 'active' : ''}`}>Iniciativa</Link>
           <Link to="/hp" className={`nav-link ${location.pathname === '/hp' ? 'active' : ''}`}>HP</Link>
           <Link to="/spells" className={`nav-link ${location.pathname === '/spells' ? 'active' : ''}`}>Magias</Link>
-          <Link to="/creatures" className={`nav-link ${location.pathname === '/creatures' ? 'active' : ''}`}>Criaturas</Link>
-          <Link to="/npc-generator" className={`nav-link ${location.pathname === '/npc-generator' ? 'active' : ''}`}>Gerador de NPCs</Link>
           <Link to="/dice" className={`nav-link ${location.pathname === '/dice' ? 'active' : ''}`}>Dados</Link>
           {user ? (
             <AccountMenu />
@@ -67,8 +65,6 @@ function Header() {
             <Link to="/initiative" className={`nav-link ${location.pathname === '/initiative' ? 'active' : ''}`} onClick={closeMenu}>Iniciativa</Link>
             <Link to="/hp" className={`nav-link ${location.pathname === '/hp' ? 'active' : ''}`} onClick={closeMenu}>HP</Link>
             <Link to="/spells" className={`nav-link ${location.pathname === '/spells' ? 'active' : ''}`} onClick={closeMenu}>Magias</Link>
-            <Link to="/creatures" className={`nav-link ${location.pathname === '/creatures' ? 'active' : ''}`} onClick={closeMenu}>Criaturas</Link>
-            <Link to="/npc-generator" className={`nav-link ${location.pathname === '/npc-generator' ? 'active' : ''}`} onClick={closeMenu}>Gerador de NPCs</Link>
             <Link to="/dice" className={`nav-link ${location.pathname === '/dice' ? 'active' : ''}`} onClick={closeMenu}>Dados</Link>
           </nav>
         </div>

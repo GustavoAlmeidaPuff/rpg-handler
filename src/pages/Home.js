@@ -6,8 +6,6 @@ import '../styles/global.css';
 import initiativeImage from '../assets/initiative-preview.png';
 import hpImage from '../assets/hp-preview.png';
 import spellsImage from '../assets/spells-preview.png';
-import creaturesImage from '../assets/creatures-preview.png';
-import npcGeneratorImage from '../assets/npc-generator-preview.png';
 import dicesImage from '../assets/dices-preview.png';
 
 function Home() {
@@ -51,26 +49,6 @@ function Home() {
       </p>
       
       <section className="products-section">
-
-        <CardLink to="/creatures">
-          <div className="product-card">
-            <div className="card-image">
-              <img src={creaturesImage} alt="Preview da lista de criaturas" />
-            </div>
-            <h2>Lista de Criaturas</h2>
-            <p>Consulte todas as criaturas do D&D 5e</p>
-          </div>
-        </CardLink>
-
-        <CardLink to="/npc-generator">
-          <div className="product-card">
-            <div className="card-image">
-              <img src={npcGeneratorImage} alt="Preview do gerador de NPCs" />
-            </div>
-            <h2>Gerador de NPCs</h2>
-            <p>Crie NPCs únicos com IA para sua campanha</p>
-          </div>
-        </CardLink>
 
         <CardLink to="/initiative">
           <div className="product-card">
