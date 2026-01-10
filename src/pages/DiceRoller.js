@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './diceroller.css';
 import '../styles/global.css';
+import { useNumberScroll } from '../hooks/useNumberScroll';
 
 function DiceRoller() {
   const [results, setResults] = useState({ values: [], total: 0, sides: null });
@@ -74,6 +75,19 @@ function DiceRoller() {
     setModifier(value === '' ? 0 : parseInt(value));
   };
 
+  // Handlers para scroll do mouse
+  const handleDiceCountScroll = useNumberScroll(
+    (newValue) => setDiceCount(newValue),
+    diceCount,
+    1,
+    20
+  );
+
+  const handleModifierScroll = useNumberScroll(
+    (newValue) => setModifier(newValue),
+    modifier
+  );
+
   return (
     <div className="dice-roller-container">
       <h1>
@@ -92,6 +106,7 @@ function DiceRoller() {
               max="20"
               value={diceCount}
               onChange={handleDiceCountChange}
+              onWheel={handleDiceCountScroll}
             />
           </div>
 
@@ -103,6 +118,7 @@ function DiceRoller() {
               value={modifier}
               onChange={handleModifierChange}
               placeholder="+0"
+              onWheel={handleModifierScroll}
             />
           </div>
         </div>

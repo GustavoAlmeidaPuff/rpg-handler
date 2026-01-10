@@ -85,6 +85,23 @@ function HPManager() {
     }));
   };
 
+  // Funções helper para criar handlers de scroll
+  const createHPScrollHandler = (characterName) => (e) => {
+    e.preventDefault();
+    const current = hpValues[characterName] || 0;
+    const delta = e.deltaY > 0 ? -1 : 1;
+    const newValue = current + delta;
+    handleHPChange(characterName, newValue.toString());
+  };
+
+  const createModificationScrollHandler = (characterName) => (e) => {
+    e.preventDefault();
+    const current = modifications[characterName] || 0;
+    const delta = e.deltaY > 0 ? -1 : 1;
+    const newValue = current + delta;
+    handleModification(characterName, newValue.toString());
+  };
+
   if (isLoading) {
     return (
       <div className="hp-manager-container">
@@ -141,6 +158,7 @@ function HPManager() {
                     value={hpValues[char.name] || 0}
                     onChange={(e) => handleHPChange(char.name, e.target.value)}
                     className="hp-input"
+                    onWheel={createHPScrollHandler(char.name)}
                   />
                 </div>
                 
@@ -151,6 +169,7 @@ function HPManager() {
                     onChange={(e) => handleModification(char.name, e.target.value)}
                     placeholder="Quantidade"
                     className="modification-input"
+                    onWheel={createModificationScrollHandler(char.name)}
                   />
                   <button 
                     onClick={() => applyModification(char.name, false)}

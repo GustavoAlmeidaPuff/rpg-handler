@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { getInitiativeData, saveInitiativeData } from '../services/dataService';
 import './initiative.css';
+import { useNumberScroll } from '../hooks/useNumberScroll';
 
 const CONDITIONS = [
   'Agarrado', 'Amedrontado', 'Atordoado', 'Caído', 'Cego',
@@ -77,11 +78,26 @@ function Initiative() {
     setCharacters(updatedCharacters.sort((a, b) => b.initiative - a.initiative));
   };
 
+  // Função helper para criar handler de scroll para iniciativa dos personagens
+  const createInitiativeScrollHandler = (index) => (e) => {
+    e.preventDefault();
+    const current = characters[index].initiative || 0;
+    const delta = e.deltaY > 0 ? -1 : 1;
+    const newValue = current + delta;
+    handleInitiativeChange(index, newValue.toString());
+  };
+
   const handleConditionChange = (index, condition) => {
     const updatedCharacters = [...characters];
     updatedCharacters[index].condition = condition;
     setCharacters(updatedCharacters);
   };
+
+  // Handler para scroll do mouse no input de iniciativa do formulário
+  const handleFormInitiativeScroll = useNumberScroll(
+    (newValue) => setNewCharacter(prev => ({ ...prev, initiative: newValue.toString() })),
+    newCharacter.initiative ? parseInt(newCharacter.initiative) : 0
+  );
 
   if (isLoading) {
     return (
@@ -121,6 +137,7 @@ function Initiative() {
             placeholder="Valor da Iniciativa"
             value={newCharacter.initiative}
             onChange={(e) => setNewCharacter({ ...newCharacter, initiative: e.target.value })}
+            onWheel={handleFormInitiativeScroll}
           />
           <select
             className="condition-select"
@@ -153,6 +170,7 @@ function Initiative() {
                 className="initiative-number editable"
                 value={char.initiative}
                 onChange={(e) => handleInitiativeChange(index, e.target.value)}
+                onWheel={createInitiativeScrollHandler(index)}
               />
               <span className="character-name">
                 {char.name}
