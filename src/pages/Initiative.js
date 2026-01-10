@@ -17,6 +17,7 @@ function Initiative() {
   const [characters, setCharacters] = useState([]);
   const [newCharacter, setNewCharacter] = useState({ name: '', initiative: '', condition: '' });
   const [isLoading, setIsLoading] = useState(true);
+  const [editingInitiatives, setEditingInitiatives] = useState({});
   const { user } = useAuth();
 
   // Carrega os dados quando o componente é montado
@@ -73,10 +74,44 @@ function Initiative() {
     setCharacters([]);
   };
 
+  // Atualiza o valor temporário durante a edição (sem ordenar)
   const handleInitiativeChange = (index, newValue) => {
+    setEditingInitiatives(prev => ({
+      ...prev,
+      [index]: newValue === '' ? '' : newValue
+    }));
+  };
+
+  // Aplica a mudança e ordena (chamado no blur e Enter)
+  const applyInitiativeChange = (index) => {
+    const newValue = editingInitiatives[index];
+    if (newValue === undefined) return; // Não houve mudança
+
     const updatedCharacters = [...characters];
-    updatedCharacters[index].initiative = parseInt(newValue) || 0;
+    const parsedValue = newValue === '' ? 0 : parseInt(newValue);
+    updatedCharacters[index].initiative = isNaN(parsedValue) ? 0 : parsedValue;
     setCharacters(updatedCharacters.sort((a, b) => b.initiative - a.initiative));
+    
+    // Limpa o valor de edição temporário
+    setEditingInitiatives(prev => {
+      const newEditing = { ...prev };
+      delete newEditing[index];
+      return newEditing;
+    });
+  };
+
+  // Handler para aplicar mudança no blur
+  const handleInitiativeBlur = (index) => {
+    applyInitiativeChange(index);
+  };
+
+  // Handler para aplicar mudança no Enter
+  const handleInitiativeKeyDown = (index, e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      applyInitiativeChange(index);
+      e.target.blur(); // Remove o foco do input
+    }
   };
 
   // Função helper para criar handlers de scroll para iniciativa dos personagens
@@ -87,7 +122,16 @@ function Initiative() {
       const current = characters[index].initiative || 0;
       const delta = e.deltaY > 0 ? -1 : 1;
       const newValue = current + delta;
-      handleInitiativeChange(index, newValue.toString());
+      // No scroll, aplica imediatamente e ordena
+      const updatedCharacters = [...characters];
+      updatedCharacters[index].initiative = newValue;
+      setCharacters(updatedCharacters.sort((a, b) => b.initiative - a.initiative));
+      // Limpa valor de edição temporário se existir
+      setEditingInitiatives(prev => {
+        const newEditing = { ...prev };
+        delete newEditing[index];
+        return newEditing;
+      });
     };
 
     const handleMouseEnter = () => {
@@ -186,8 +230,12 @@ function Initiative() {
               <input
                 type="number"
                 className="initiative-number editable"
-                value={char.initiative}
+                value={editingInitiatives[index] !== undefined 
+                  ? editingInitiatives[index] 
+                  : (char.initiative === 0 ? '' : char.initiative)}
                 onChange={(e) => handleInitiativeChange(index, e.target.value)}
+                onBlur={() => handleInitiativeBlur(index)}
+                onKeyDown={(e) => handleInitiativeKeyDown(index, e)}
                 {...createInitiativeScrollHandlers(index)}
               />
               <span className="character-name">
