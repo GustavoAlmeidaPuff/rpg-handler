@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getHPData, saveHPData, getInitiativeData } from '../services/dataService';
 import './hpmanager.css';
 import '../styles/global.css';
+import { disablePageScroll, enablePageScroll } from '../utils/scrollUtils';
 
 function HPManager() {
   const [characters, setCharacters] = useState([]);
@@ -86,20 +87,54 @@ function HPManager() {
   };
 
   // Funções helper para criar handlers de scroll
-  const createHPScrollHandler = (characterName) => (e) => {
-    e.preventDefault();
-    const current = hpValues[characterName] || 0;
-    const delta = e.deltaY > 0 ? -1 : 1;
-    const newValue = current + delta;
-    handleHPChange(characterName, newValue.toString());
+  const createHPScrollHandlers = (characterName) => {
+    const handleWheel = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const current = hpValues[characterName] || 0;
+      const delta = e.deltaY > 0 ? -1 : 1;
+      const newValue = current + delta;
+      handleHPChange(characterName, newValue.toString());
+    };
+
+    const handleMouseEnter = () => {
+      disablePageScroll();
+    };
+
+    const handleMouseLeave = () => {
+      enablePageScroll();
+    };
+
+    return {
+      onWheel: handleWheel,
+      onMouseEnter: handleMouseEnter,
+      onMouseLeave: handleMouseLeave
+    };
   };
 
-  const createModificationScrollHandler = (characterName) => (e) => {
-    e.preventDefault();
-    const current = modifications[characterName] || 0;
-    const delta = e.deltaY > 0 ? -1 : 1;
-    const newValue = current + delta;
-    handleModification(characterName, newValue.toString());
+  const createModificationScrollHandlers = (characterName) => {
+    const handleWheel = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const current = modifications[characterName] || 0;
+      const delta = e.deltaY > 0 ? -1 : 1;
+      const newValue = current + delta;
+      handleModification(characterName, newValue.toString());
+    };
+
+    const handleMouseEnter = () => {
+      disablePageScroll();
+    };
+
+    const handleMouseLeave = () => {
+      enablePageScroll();
+    };
+
+    return {
+      onWheel: handleWheel,
+      onMouseEnter: handleMouseEnter,
+      onMouseLeave: handleMouseLeave
+    };
   };
 
   if (isLoading) {
@@ -158,7 +193,7 @@ function HPManager() {
                     value={hpValues[char.name] || 0}
                     onChange={(e) => handleHPChange(char.name, e.target.value)}
                     className="hp-input"
-                    onWheel={createHPScrollHandler(char.name)}
+                    {...createHPScrollHandlers(char.name)}
                   />
                 </div>
                 
@@ -169,7 +204,7 @@ function HPManager() {
                     onChange={(e) => handleModification(char.name, e.target.value)}
                     placeholder="Quantidade"
                     className="modification-input"
-                    onWheel={createModificationScrollHandler(char.name)}
+                    {...createModificationScrollHandlers(char.name)}
                   />
                   <button 
                     onClick={() => applyModification(char.name, false)}

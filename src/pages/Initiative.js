@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getInitiativeData, saveInitiativeData } from '../services/dataService';
 import './initiative.css';
 import { useNumberScroll } from '../hooks/useNumberScroll';
+import { disablePageScroll, enablePageScroll } from '../utils/scrollUtils';
 
 const CONDITIONS = [
   'Agarrado', 'Amedrontado', 'Atordoado', 'Caído', 'Cego',
@@ -78,13 +79,30 @@ function Initiative() {
     setCharacters(updatedCharacters.sort((a, b) => b.initiative - a.initiative));
   };
 
-  // Função helper para criar handler de scroll para iniciativa dos personagens
-  const createInitiativeScrollHandler = (index) => (e) => {
-    e.preventDefault();
-    const current = characters[index].initiative || 0;
-    const delta = e.deltaY > 0 ? -1 : 1;
-    const newValue = current + delta;
-    handleInitiativeChange(index, newValue.toString());
+  // Função helper para criar handlers de scroll para iniciativa dos personagens
+  const createInitiativeScrollHandlers = (index) => {
+    const handleWheel = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const current = characters[index].initiative || 0;
+      const delta = e.deltaY > 0 ? -1 : 1;
+      const newValue = current + delta;
+      handleInitiativeChange(index, newValue.toString());
+    };
+
+    const handleMouseEnter = () => {
+      disablePageScroll();
+    };
+
+    const handleMouseLeave = () => {
+      enablePageScroll();
+    };
+
+    return {
+      onWheel: handleWheel,
+      onMouseEnter: handleMouseEnter,
+      onMouseLeave: handleMouseLeave
+    };
   };
 
   const handleConditionChange = (index, condition) => {
@@ -93,8 +111,8 @@ function Initiative() {
     setCharacters(updatedCharacters);
   };
 
-  // Handler para scroll do mouse no input de iniciativa do formulário
-  const handleFormInitiativeScroll = useNumberScroll(
+  // Handlers para scroll do mouse no input de iniciativa do formulário
+  const formInitiativeScrollHandlers = useNumberScroll(
     (newValue) => setNewCharacter(prev => ({ ...prev, initiative: newValue.toString() })),
     newCharacter.initiative ? parseInt(newCharacter.initiative) : 0
   );
@@ -137,7 +155,7 @@ function Initiative() {
             placeholder="Valor da Iniciativa"
             value={newCharacter.initiative}
             onChange={(e) => setNewCharacter({ ...newCharacter, initiative: e.target.value })}
-            onWheel={handleFormInitiativeScroll}
+            {...formInitiativeScrollHandlers}
           />
           <select
             className="condition-select"
@@ -170,7 +188,7 @@ function Initiative() {
                 className="initiative-number editable"
                 value={char.initiative}
                 onChange={(e) => handleInitiativeChange(index, e.target.value)}
-                onWheel={createInitiativeScrollHandler(index)}
+                {...createInitiativeScrollHandlers(index)}
               />
               <span className="character-name">
                 {char.name}

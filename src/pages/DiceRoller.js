@@ -76,14 +76,14 @@ function DiceRoller() {
   };
 
   // Handlers para scroll do mouse
-  const handleDiceCountScroll = useNumberScroll(
+  const diceCountScrollHandlers = useNumberScroll(
     (newValue) => setDiceCount(newValue),
     diceCount,
     1,
     20
   );
 
-  const handleModifierScroll = useNumberScroll(
+  const modifierScrollHandlers = useNumberScroll(
     (newValue) => setModifier(newValue),
     modifier
   );
@@ -106,7 +106,7 @@ function DiceRoller() {
               max="20"
               value={diceCount}
               onChange={handleDiceCountChange}
-              onWheel={handleDiceCountScroll}
+              {...diceCountScrollHandlers}
             />
           </div>
 
@@ -118,7 +118,7 @@ function DiceRoller() {
               value={modifier}
               onChange={handleModifierChange}
               placeholder="+0"
-              onWheel={handleModifierScroll}
+              {...modifierScrollHandlers}
             />
           </div>
         </div>
